@@ -36,3 +36,9 @@ Unknown: Windows
 
 using `python email_hacker.py -h` to get help
 :P
+
+
+## TODO
+1. 不硬编码邮件内容
+2. 弃用 `dnspython` 自己写
+3. 随机邮件内容
