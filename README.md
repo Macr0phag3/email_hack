@@ -4,6 +4,7 @@ using python to create fake email & email bomb!
 `pip install dnspython`
 
 Supported: Unix, Linux, Py2.x, Py3.x
+
 Unknown: Windows
 
 
@@ -28,7 +29,7 @@ Unknown: Windows
                         长连接模式，谨慎使用
 
 ## Cookbook
-（ctrl+c **once** to stop, 
+（ctrl+c **once** to stop,
 
 using `python email_hacker.py -h` to get help
 :P
