@@ -12,6 +12,7 @@ Unknown: Windows
 （使用 ctrl+c 终止程序，按一次就够了
 
 参数:
+```
   -h, --help            输出帮助信息
 
   -faddr FROM_ADDRESS, --from_address FROM_ADDRESS
@@ -28,6 +29,7 @@ Unknown: Windows
 
   -c CRAZY_MODE, --crazy_mode CRAZY_MODE
                         长连接模式，谨慎使用
+```
 
 ## Cookbook
 （ctrl+c **once** to stop,
