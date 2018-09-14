@@ -9,3 +9,5 @@ Unknown: Windows
 ## 说明书
 
 ## Cookbook
+using `python email_hacker.py -h` to get help
+:P
