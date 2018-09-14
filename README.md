@@ -5,3 +5,7 @@ using python to create fake email & email bomb!
 
 Supported: Unix, Linux, Py2.x, Py3.x
 Unknown: Windows
+
+## 说明书
+
+## Cookbook
