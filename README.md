@@ -13,7 +13,7 @@ using python to create a fake-email & email-bomb!
 
 
 ## 说明书
-（使用 ctrl+c 终止程序，按一次就够了
+（使用 ctrl+c 终止程序，**按一次就够了**
 
 参数:
 ```
