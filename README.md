@@ -36,7 +36,7 @@ using python to create a fake-email & email-bomb!
 ```
 
 ## Cookbook
-（ctrl+c **once** to stop,
+（ctrl+c to stop,
 
 using `python email_hacker.py -h` to get help
 :P
