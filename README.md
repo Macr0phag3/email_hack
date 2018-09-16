@@ -40,5 +40,6 @@ using `python email_hacker.py -h` to get help
 
 ## TODO
 - [ ] 不硬编码邮件内容
-- [ ] ~~弃用 `dnspython` 自己写~~
 - [ ] 随机邮件内容
+- [ ] 为 crazy_mode 增加一个级别的 verbose
+- [ ] ~~弃用 `dnspython` 自己写~~
