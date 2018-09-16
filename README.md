@@ -4,10 +4,10 @@ using python to create a fake-email & email-bomb!
 `pip install dnspython`
 
 ## Supported
-Unix, Linux, Py2.x, Py3.x
-
-## Unknown
-Windows
+- [x] Unix
+- [x] Linux
+- [x] Py2.x
+- [x] Py3.x
 
 
 ## 说明书
