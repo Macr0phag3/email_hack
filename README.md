@@ -1,6 +1,6 @@
 using python to create a fake-email & email-bomb!
 
-## Requires
+## Dependencies
 `pip install dnspython`
 
 ## Supported
