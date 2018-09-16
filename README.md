@@ -1,5 +1,7 @@
 using python to create a fake-email & email-bomb!
 
+（仅限学术交流，用于非法用途概不负责）
+
 ## Dependencies
 `pip install dnspython`
 
