@@ -1,11 +1,13 @@
 using python to create fake email & email bomb!
 
-## requires
+## Requires
 `pip install dnspython`
 
-Supported: Unix, Linux, Py2.x, Py3.x
+## Supported
+Unix, Linux, Py2.x, Py3.x
 
-Unknown: Windows
+## Unknown
+Windows
 
 
 ## 说明书
