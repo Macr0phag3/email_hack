@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 import socket
 from time import sleep
 import random
@@ -250,7 +249,7 @@ else:
     if (threads_num > 1 or crazy_mode) and verbose:
         Print(u"It's not recommended to enable output(let verbose>1) in multi-threaded mode, change it to 0(let verbose=0)?",
               color=u"yellow", threshold=0, sign=u"[!]WARNING: ")
-        if input(u"  [-]type no/[yes]: ") != "no":
+        if vars(__builtins__).get('raw_input', input)(u"  [-]type no/[yes]: ") != "no":
             verbose = 0
             Print(u"as you wish\n", color=u"white", threshold=0, sign=u"  [*]")
         else:
