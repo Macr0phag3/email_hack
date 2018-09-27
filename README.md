@@ -2,6 +2,10 @@ using python to create a fake-email & email-bomb!
 
 （仅限学术交流，用于非法用途概不负责）
 
+You can come to [my blog](https://www.tr0y.wang/2018/09/26/email-hacker/) or [freebuf](http://www.freebuf.com/sectool/184555.html) to get more details.
+
+我的[博客](https://www.tr0y.wang/2018/09/26/email-hacker/) 以及 [freebuf](http://www.freebuf.com/sectool/184555.html) 均有详细的原理说明，有兴趣的话可以去看看。
+
 ## Dependencies
 `pip install dnspython`
 
