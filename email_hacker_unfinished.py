@@ -205,11 +205,13 @@ def quit(signum, frame):
     global quit_flag
 
     quit_flag = 0
-    while any(threads_alive):
+    Print("\r   \n[!]Stopping...\n", threshold=0, color="yellow", flag=0, sign="")
+    while any(threads_alive) and SMTP_addr:
         pass
 
-    print(u"\n%s %s" % (PutColor(u"[*]success:", u"green"), succ_num))
-    print(u"%s %s\n" % (PutColor(u"[!]failed:", u"red"), failed_num))
+    Print(u"%s %s" % (u"success:", succ_num), threshold=0, color=u"green", flag=0, sign="[*]")
+    Print(u"%s %s" % (u"failed:", failed_num), threshold=0, color=u"red", flag=0, sign="[!]")
+
     print(PutColor(random.choice([
         u"Goodbye", u"Have a nice day",
         u"See you later", u"Bye",
