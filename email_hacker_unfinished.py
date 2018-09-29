@@ -160,7 +160,7 @@ def Print(string, threshold=2, color=u"gray", sign=u"  [-]", flag=1):
         string = "  [-]"+string
 
     if Lock.acquire():
-        print(string)
+        print("\r"+string)
         Lock.release()
 
 
@@ -204,13 +204,15 @@ def Launcher():
 def quit(signum, frame):
     global quit_flag
 
-    quit_flag = 0
-    Print("\r   \n[!]Stopping...\n", threshold=0, color="yellow", flag=0, sign="")
-    while any(threads_alive) and SMTP_addr:
-        pass
+    quit_flag = circle = 0
+    while any(threads_alive):
+        Print("Stopping %s\033[1A" %
+              (["\\", "|", "/", "-"][circle]), color="yellow", threshold=0, flag=0, sign="\033[?25l\r[!]")
+        circle = (circle+1) % 4
 
-    Print(u"%s %s" % (u"success:", succ_num), threshold=0, color=u"green", flag=0, sign="[*]")
-    Print(u"%s %s" % (u"failed:", failed_num), threshold=0, color=u"red", flag=0, sign="[!]")
+    Print(u"%s %s" % (u"success:", succ_num),
+          threshold=0, color=u"green", flag=0, sign="\n\n\033[?25h[*]")
+    Print(u"%s %s\n" % (u"failed:", failed_num), threshold=0, color=u"red", flag=0, sign="[!]")
 
     print(PutColor(random.choice([
         u"Goodbye", u"Have a nice day",
