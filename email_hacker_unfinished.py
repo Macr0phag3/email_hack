@@ -216,7 +216,7 @@ def quit(signum, frame):
           (["\\", "|", "/", "-"][circle]), color="yellow", threshold=1, flag=0, sign="\033[?25l\r[!]")
     circle = (circle+1) % 4
     '''
-    for i in Upper("stopping"):
+    for i in Upper("stopping..."):
         Print(i+"\033[1A", color="yellow", threshold=1, flag=0, sign="\033[?25l\r[!]")
         sleep(0.1)
 
