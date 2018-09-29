@@ -43,23 +43,23 @@ class FakeEmail:
         for result in msg.split(u"\r\n"):
             try:
                 self.sk.sendall((result+u"\r\n").encode("utf8"))
-                Print(result, threshold=1, color=u"yellow", sign=u"=> ")
+                Print(result, threshold=2, color=u"yellow", sign=u"=> ")
             except Exception as e:
-                Print(str(e), threshold=0, color=u"red", sign=u"=> ")
+                Print(str(e), threshold=1, color=u"red", sign=u"=> ")
                 return 0
         return 1
 
-    def Recv(self, check=u"", threshold=1):
+    def Recv(self, check=u"", threshold=2):
         try:
             data = [i.decode(u"utf8") for i in self.sk.recv(1024).split(b"\r\n") if i]
             assert data
         except AssertionError:
             if not check:
-                Print(u"recv empty answer", threshold=0, color=u"red", sign=u"<= ")
+                Print(u"recv empty answer", threshold=1, color=u"red", sign=u"<= ")
             return (0, u"recv empty answer")
         except Exception as e:
             if not check:
-                Print(str(e), threshold=0, color=u"red", sign=u"<= ")
+                Print(str(e), threshold=1, color=u"red", sign=u"<= ")
 
             return (0, str(e))
 
@@ -67,7 +67,7 @@ class FakeEmail:
             return (0, data[-1])
 
         if any([i for i in range(400, 600) if data[-1][:3] == str(i)]):
-            Print(data[-1], threshold=0, color=u"red", sign=u"<= ")
+            Print(data[-1], threshold=1, color=u"red", sign=u"<= ")
             return (0, data[-1])
 
         for result in data:
@@ -82,7 +82,7 @@ class FakeEmail:
             check_connect = self.Connect()
             if not check_connect[0]:
                 Print(u"creating connection failed: "+u"I just got the answer: '%s' from %s" % (check_connect[1], self.SMTP_addr),
-                      threshold=0, color=u"red", sign=u"[X]", flag=0)
+                      threshold=1, color=u"red", sign=u"[X]", flag=0)
                 self.sk.close()
                 failed_num += 1
                 if crazy_mode:
@@ -116,11 +116,11 @@ class FakeEmail:
                     self.Send(
                     u"同学你好\r\n感谢你对完美世界校园招聘的关注，面试时间暂定为 9月20日 下午两点。如有疑问欢迎邮件交流~\r\n在茫茫宇宙中，在浩瀚银河里，有一个可以任你挥洒的世界，大家都抱着纯粹初心背负梦想前行，在这里，激情无限，跟志同道合的伙伴热血拼搏。在这里，秉持热爱，把梦想变成现实。在这里，精益求精，定义下一代未知的惊喜！\r\n."
                 ):
-                    result = self.Recv(threshold=0, check=u"250")
+                    result = self.Recv(threshold=1, check=u"250")
                     if result[0]:
                         succ_num += 1
                     else:
-                        Print(result[1], threshold=0, color=u"red", sign=u"<= ")
+                        Print(result[1], threshold=1, color=u"red", sign=u"<= ")
                         failed_num += 1
                 else:
                     failed_num += 1
@@ -177,7 +177,7 @@ def DNSQuery(to_addr):
         assert SMTP_addr != u""
     except Exception as e:
         Print(u"query MX of %s failed: " % to_addr + str(e),
-              threshold=0, color=u"red", sign=u"[X]", flag=0)
+              threshold=1, color=u"red", sign=u"[X]", flag=0)
         return 0
 
     Print(u"success", sign=u"  [*]")
@@ -201,18 +201,28 @@ def Launcher():
             pass
 
 
+def Upper(string, index=0):
+    while any(threads_alive):
+        index = (index+1) % len(string)
+        yield string[:index]+string[index].upper()+string[index+1:]
+
+
 def quit(signum, frame):
     global quit_flag
 
-    quit_flag = circle = 0
-    while any(threads_alive):
-        Print("Stopping %s\033[1A" %
-              (["\\", "|", "/", "-"][circle]), color="yellow", threshold=0, flag=0, sign="\033[?25l\r[!]")
-        circle = (circle+1) % 4
+    quit_flag = 0
+    '''
+    Print("Stopping %s\033[1A" %
+          (["\\", "|", "/", "-"][circle]), color="yellow", threshold=1, flag=0, sign="\033[?25l\r[!]")
+    circle = (circle+1) % 4
+    '''
+    for i in Upper("stopping"):
+        Print(i+"\033[1A", color="yellow", threshold=1, flag=0, sign="\033[?25l\r[!]")
+        sleep(0.1)
 
     Print(u"%s %s" % (u"success:", succ_num),
-          threshold=0, color=u"green", flag=0, sign="\n\n\033[?25h[*]")
-    Print(u"%s %s\n" % (u"failed:", failed_num), threshold=0, color=u"red", flag=0, sign="[!]")
+          threshold=1, color=u"green", flag=0, sign="\n\n\033[?25h[*]")
+    Print(u"%s %s\n" % (u"failed:", failed_num), threshold=1, color=u"red", flag=0, sign="[!]")
 
     print(PutColor(random.choice([
         u"Goodbye", u"Have a nice day",
@@ -257,25 +267,25 @@ if verbose == -1:
     verbose = 2 if threads_num == 1 else 0 if crazy_mode else 1
 
 elif threads_num > 1:
-    if crazy_mode and verbose:
+    if crazy_mode and verbose > 1:
         v = 0
         Print(u"""...It's not recommended to enable so many output(let verbose>0)
 ...in the multi-threaded mode with crazy mode,
 ...change it to 0? (let verbose=0)""",
-              color=u"yellow", threshold=0, sign=u"[!]WARNING: \n", flag=0)
+              color=u"yellow", threshold=1, sign=u"[!]WARNING: \n", flag=0)
     elif verbose > 1:
         v = 1
         Print(u"""...It's not recommended to enable so many output(let verbose>1)
 ...in the multi-threaded mode,
 ...change it to 1? (let verbose=1)""",
-              color=u"yellow", threshold=0, sign=u"[!]WARNING: \n", flag=0)
+              color=u"yellow", threshold=1, sign=u"[!]WARNING: \n", flag=0)
 
 if v != -1:
     if vars(__builtins__).get('raw_input', input)(PutColor(u"[!]type [yes]/no: ", "yellow")) != "no":
         verbose = v
-        Print(u"as you wish\n", color=u"white", threshold=0, sign=u"[*]", flag=0)
+        Print(u"as you wish\n", color=u"white", threshold=1, sign=u"[*]", flag=0)
     else:
-        Print(u"in a mess, of course\n", color=u"yellow", threshold=0, sign=u"[!]", flag=0)
+        Print(u"in a mess, of course\n", color=u"yellow", threshold=1, sign=u"[!]", flag=0)
 
 
 SMTP_addr = DNSQuery(to_addr)
