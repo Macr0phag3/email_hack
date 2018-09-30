@@ -197,8 +197,9 @@ def Launcher():
             t.join()
 
     else:
-        while 1:
-            pass
+        for i in Trick("attacking..."):
+            Print(i+"\033[1A", color="green", threshold=0, flag=0, sign="\033[?25l\033[K[!]")
+            sleep(0.1)
 
 
 def Trick(string, index=0):
@@ -220,8 +221,8 @@ def quit(signum, frame):
         Print(i+"\033[1A", color="yellow", threshold=0, flag=0, sign="\033[?25l\033[K[!]")
         sleep(0.1)
 
-    Print(u"%s %s" % (u"success:", succ_num),
-          threshold=0, color=u"green", flag=0, sign="\n\n\033[?25h[*]")
+    Print(u"%s %s" % (u"success:", succ_num), threshold=0,
+          color=u"green", flag=0, sign="\n"*(crazy_mode == True)+"\n\033[?25h[*]")
     Print(u"%s %s\n" % (u"failed:", failed_num), threshold=0, color=u"red", flag=0, sign="[!]")
 
     print(PutColor(random.choice([
