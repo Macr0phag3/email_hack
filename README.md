@@ -47,10 +47,16 @@ You can come to [my blog](https://www.tr0y.wang/2018/09/26/email-hacker/) or [fr
 using `python email_hacker.py -h` to get help
 :P
 
+## Update
+- v1.0: 基本的发送，伪造
+- v2.0:
+  - 增加 verbose 为4个级别：0、1、2、3
+  - 更改 crazy_mode 的输出为固定行形式
 
 ## TODO
+- [x] 加个 logo
 - [ ] 不硬编码邮件内容
 - [ ] 随机邮件内容
-- [ ] 为 crazy_mode 增加一个级别的 verbose
-- [ ] 将单线程模式也开设一个线程，主进程不再负责具体任务，以便统一代码形式。
+- [x] 为 crazy_mode 增加一个级别的 verbose
+- [x] 将单线程模式也开设一个线程，主进程不再负责具体任务，以便统一代码形式。
 - [ ] ~~弃用 `dnspython` 自己写~~
