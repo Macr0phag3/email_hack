@@ -226,9 +226,8 @@ def quit(signum, frame):
     Print(u"%s %s\n" % (u"failed:", failed_num), threshold=0, color=u"red", flag=0, sign="[!]")
 
     print(PutColor(random.choice([
-        u"Goodbye", u"Have a nice day",
-        u"See you later", u"Bye",
-        u"Farewell", u"Cheerio",
+        u"Goodbye", u"Have a nice day", u"See you later",
+        u"Farewell", u"Cheerio", u"Bye",
     ]), u"white"))
     sys.exit()
 
