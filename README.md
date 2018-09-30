@@ -30,7 +30,7 @@ You can come to [my blog](https://www.tr0y.wang/2018/09/26/email-hacker/) or [fr
 
 
 ## 说明书
-（使用 ctrl+c 终止程序，**按一次就够了**
+使用 ctrl+c 终止程序
 
 参数:
 ```
@@ -53,7 +53,7 @@ You can come to [my blog](https://www.tr0y.wang/2018/09/26/email-hacker/) or [fr
 ```
 
 ## Cookbook
-（ctrl+c to stop,
+ctrl+c to stop
 
 using `python email_hacker.py -h` to get help
 :P
