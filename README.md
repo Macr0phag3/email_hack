@@ -1,11 +1,11 @@
-```
+
 ███████╗     ██╗  ██╗
 ██╔════╝     ██║  ██║ by Tr0y
 █████╗       ███████║ v2.0
 ██╔══╝       ██╔══██║
 ███████╗     ██║  ██║
 ╚══════╝mail ╚═╝  ╚═╝acker
-```
+
 
 using python to create a fake-email & email-bomb!
 
