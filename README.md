@@ -52,6 +52,8 @@ using `python email_hacker.py -h` to get help
 - v2.0:
   - 增加 verbose 为4个级别：0、1、2、3
   - 更改 crazy_mode 的输出为固定行形式
+  - 统一代码形式
+  - 修复若干个 bug
 
 ## TODO
 - [x] 加个 logo
