@@ -161,13 +161,14 @@ def superPrint():
         for i, data in enumerate(Data):
             print("\033[K\r%s%s" % (PutColor("No.%d: " % i, "white"),  data))
 
-        print(PutColor("\r\033[K[*]", "green")+PutColor(index, "white")+"\033[1A")
+        print(PutColor("\r\033[K[%d]" % succ_num, "green")+PutColor(index, "white")+"\033[1A")
         print("\033[%dA" % (len(Data)+1))
         sleep(0.1)
 
     for i, data in enumerate(Data):
         print("\033[K\r%s%s" % (PutColor("No.%d: " % i, "white"),  data))
 
+    print("\n"*(crazy_mode != 1)),
     Lock.release()
 
 
@@ -227,7 +228,7 @@ def Launcher():
             t.join()
     else:
         for i in Indicator("attacking..."):
-            Print(i+"\033[1A", color="green", threshold=0, flag=0, sign="\033[K[*]")
+            Print(i+"\033[1A", color="green", threshold=0, flag=0, sign="\033[K[%d]" % succ_num)
             sleep(0.1)
 
 
@@ -274,7 +275,6 @@ def show_logo():
 """+"-"*30)
 
 
-show_logo()
 signal.signal(signal.SIGINT, quit)
 signal.signal(signal.SIGTERM, quit)
 parser = argparse.ArgumentParser()
@@ -294,6 +294,7 @@ parser.add_argument(u"-c", u"--crazy_mode",
                     help=u"Keep sending fake email (** Use with caution **)", action='store_true', default=False)
 args = parser.parse_args()
 
+show_logo()
 succ_num = failed_num = 0
 quit_flag = print_flag = 1
 ver = -1
