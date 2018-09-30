@@ -197,12 +197,12 @@ def Launcher():
             t.join()
 
     else:
-        for i in Trick("attacking..."):
+        for i in Indicator("attacking..."):
             Print(i+"\033[1A", color="green", threshold=0, flag=0, sign="\033[?25l\033[K[!]")
             sleep(0.1)
 
 
-def Trick(string, index=0):
+def Indicator(string, index=0):
     while any(threads_alive) and v == "go":
         index = (index+1) % len(string)
         yield string[:index]+string[index].upper()+string[index+1:]
@@ -217,7 +217,7 @@ def quit(signum, frame):
           (["\\", "|", "/", "-"][circle]), color="yellow", threshold=0, flag=0, sign="\033[?25l\033[K[!]")
     circle = (circle+1) % 4
     '''
-    for i in Trick("stopping..."):
+    for i in Indicator("stopping..."):
         Print(i+"\033[1A", color="yellow", threshold=0, flag=0, sign="\033[?25l\033[K[!]")
         sleep(0.1)
 
