@@ -150,18 +150,22 @@ def PutColor(string, color):
     return u"\033[40;1;%s;40m%s\033[0m" % (colors[color], string)
 
 
-def Print(string, threshold=3, color=u"gray", sign=u"  [-]", flag=1):
+def Print(string, threshold=3, color=u"gray", sign=u"  [-]", flag=1, id=-1):
     if verbose < threshold:
         return
 
-    str_color = u"gray" if color == u"gray" else u"white"
-    string = PutColor(sign, color)+PutColor(string, str_color)
-    if verbose > 2 and threshold < 3 and flag:
-        string = "  [-]"+string
+    if not verbose:
+        pass
 
-    if Lock.acquire():
-        print("\r"+string)
-        Lock.release()
+    else:
+        str_color = u"gray" if color == u"gray" else u"white"
+        string = PutColor(sign, color)+PutColor(string, str_color)
+        if verbose > 2 and threshold < 3 and flag:
+            string = "  [-]"+string
+
+        if Lock.acquire():
+            print("\r"+string)
+            Lock.release()
 
 
 def DNSQuery(to_addr):
