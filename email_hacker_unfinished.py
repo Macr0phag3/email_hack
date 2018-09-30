@@ -262,7 +262,7 @@ def quit(signum, frame):
 
 def show_logo():
     print("\033c\033[?25l")
-    print("-"*45+"""
+    print("-"*30+"""
 
 ███████╗     ██╗  ██╗
 ██╔════╝     ██║  ██║ by Tr0y
@@ -270,7 +270,8 @@ def show_logo():
 ██╔══╝       ██╔══██║
 ███████╗     ██║  ██║
 ╚══════╝mail ╚═╝  ╚═╝acker
-"""+"-"*35)
+
+"""+"-"*30)
 
 
 show_logo()
