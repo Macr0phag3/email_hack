@@ -59,7 +59,7 @@ using `python email_hacker.py -h` to get help
 :P
 
 ## Update
-- v1.0: 基本的发送，伪造
+- v1.0: 基本的发送，伪造功能
 - v2.0:
   - 增加 verbose 为4个级别：0、1、2、3
   - 更改 crazy_mode 的输出为固定行形式
