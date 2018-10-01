@@ -24,8 +24,10 @@ You can come to [my blog](https://www.tr0y.wang/2018/09/26/email-hacker/) or [fr
 
 ## 说明书
 GIF 演示
-![no_argv.gif](https://raw.githubusercontent.com/Macr0phag3/email_hack/master/pics/no_argv.gif)
 
+![no_argv](https://raw.githubusercontent.com/Macr0phag3/email_hack/master/pics/no_argv.gif)
+![tnum2_v1](https://raw.githubusercontent.com/Macr0phag3/email_hack/master/pics/tnum2_v1.gif)
+![tnum5_c](https://raw.githubusercontent.com/Macr0phag3/email_hack/master/pics/tnum5_c.gif)
 
 使用 ctrl+c 终止程序
 
