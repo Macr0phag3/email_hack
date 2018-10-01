@@ -26,7 +26,7 @@ You can come to [my blog](https://www.tr0y.wang/2018/09/26/email-hacker/) or [fr
 GIF 演示
 
 - `python email_hacker_test.py -faddr hr@huawei.com -taddr xxxxxx@163.com`
-![no_argv](https://raw.githubusercontent.com/Macr0phag3/email_hack/master/pics/no_argv.gif)
+![no_argv](https://raw.githubusercontent.com/Macr0phag3/email_hack/master/pics/no_argv.png)
 
 - `python email_hacker_test.py -faddr hr@huawei.com -taddr xxxxxx@163.com -v1 -tnum 2 -c`
 ![tnum2_v1](https://raw.githubusercontent.com/Macr0phag3/email_hack/master/pics/tnum2_v1.gif)
