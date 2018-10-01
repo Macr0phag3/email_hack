@@ -114,9 +114,9 @@ class FakeEmail:
 
                 if self.Send(u"to: %s" % self.to_addr) and\
                         self.Send(u"from: %s" % self.from_addr) and\
-                        self.Send(u"subject: "+subject) and\
+                        self.Send("subject: "+subject) and\
                         self.Send(u"") and\
-                        self.Send(content+"\r\n\r\nYour random id is "+"".join(random.choice(string.hexdigits) for i in range(32))+"\r\n."):
+                        self.Send(body+"\r\n\r\nYour random id is "+"".join(random.choice(string.hexdigits) for i in range(32))+"\r\n."):
 
                     result = self.Recv(threshold=0, check=u"250")
                     if result[0]:
@@ -305,8 +305,9 @@ quit_flag = print_flag = 1
 ver = -1
 from_addr = args.from_address
 to_addr = args.to_address
-subject = args.subject.decode("utf8")
-content = args.body.replace("\\n", "\r\n").decode("utf8")
+subject = args.subject.decode("utf8") if vars(str).get("decode") else args.subject
+body = (args.body.decode(
+    "utf8") if vars(str).get("decode") else args.body).replace("\\n", "\r\n")
 threads_num = args.threads_num if args.threads_num > 0 else 1
 verbose = args.verbose
 crazy_mode = args.crazy_mode
