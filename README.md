@@ -47,13 +47,13 @@ GIF 演示
                         接收方的邮件地址
 
   -tnum THREADS_NUM, --threads_num THREADS_NUM
-                        多线程的线程数，默认为 1，即单线程
+                        多线程的线程数，默认为 1
 
   -v VERBOSE, --verbose VERBOSE
-                        输出信息的详细程度，默认由代码自动选择，可选为 0, 1, 2
+                        输出信息的详细程度，默认由代码自动选择，可选为 0, 1, 2, 3
 
   -c CRAZY_MODE, --crazy_mode CRAZY_MODE
-                        长连接模式，谨慎使用，默认为0，可选为 0, 1
+                        长连接模式，谨慎使用，默认为False
 ```
 
 ## Cookbook

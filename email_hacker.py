@@ -276,19 +276,19 @@ signal.signal(signal.SIGINT, quit)
 signal.signal(signal.SIGTERM, quit)
 parser = argparse.ArgumentParser()
 parser.add_argument(u"-faddr", u"--from_address",
-                    help=u"fake from address", required=True)
+                    help=u"fake-from-address", required=True)
 
 parser.add_argument(u"-taddr", u"--to_address",
                     help=u"the address you want to delivery", required=True)
 
 parser.add_argument(u"-tnum", u"--threads_num",
-                    help=u"how many threads you want", default=1, type=int)
+                    help=u"how many threads you want (default is 1)", default=1, type=int)
 
 parser.add_argument(u"-v", u"--verbose",
-                    help=u"verbose level", default=-1, type=int)
+                    help=u"verbose level (choice in [0, 1, 2, 3])", default=-1, type=int)
 
 parser.add_argument(u"-c", u"--crazy_mode",
-                    help=u"Keep sending fake email (** Use with caution **)", action='store_true', default=False)
+                    help=u"Keep sending fake-email (default is False ** Use with caution **)", action='store_true', default=False)
 args = parser.parse_args()
 
 show_logo()
