@@ -1,11 +1,4 @@
-```
-███████╗     ██╗  ██╗
-██╔════╝     ██║  ██║ by Tr0y
-█████╗       ███████║ v2.0
-██╔══╝       ██╔══██║
-███████╗     ██║  ██║
-╚══════╝mail ╚═╝  ╚═╝acker
-```
+![logo](https://raw.githubusercontent.com/Macr0phag3/email_hack/master/pics/Logo.png)
 
 using python to create a fake-email & email-bomb!
 
