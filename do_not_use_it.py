@@ -7,6 +7,7 @@ import dns.resolver
 import argparse
 import signal
 import sys
+import string
 
 
 class FakeEmail:
@@ -112,12 +113,11 @@ class FakeEmail:
                     continue
 
                 if self.Send(u"to: %s" % self.to_addr) and\
-                    self.Send(u"from: %s" % self.from_addr) and\
-                    self.Send(u"subject: 完美世界 2019 校园招聘") and\
-                    self.Send(u"") and\
-                    self.Send(
-                    u"同学你好\r\n感谢你对完美世界校园招聘的关注，面试时间暂定为 9月20日 下午两点。如有疑问欢迎邮件交流~\r\n在茫茫宇宙中，在浩瀚银河里，有一个可以任你挥洒的世界，大家都抱着纯粹初心背负梦想前行，在这里，激情无限，跟志同道合的伙伴热血拼搏。在这里，秉持热爱，把梦想变成现实。在这里，精益求精，定义下一代未知的惊喜！\r\n."
-                ):
+                        self.Send(u"from: %s" % self.from_addr) and\
+                        self.Send(u"subject: "+subject) and\
+                        self.Send(u"") and\
+                        self.Send(content+"\r\n\r\nYour random id is "+"".join(random.choice(string.hexdigits) for i in range(32))+"\r\n."):
+
                     result = self.Recv(threshold=0, check=u"250")
                     if result[0]:
                         succ_num += 1
@@ -268,7 +268,7 @@ def show_logo():
 \033[40;1;40m█████╗       ███████║ \033[40;1;33;40mv2.0\033[0m\033[0m
 \033[40;1;40m██╔══╝       ██╔══██║\033[0m
 \033[40;1;40m███████╗     ██║  ██║\033[0m
-╚══════╝\033[40;1;32;40mmail\033[0m ╚═╝  ╚═╝\033[40;1;32;40macker\033[0m 
+╚══════╝\033[40;1;32;40mmail\033[0m ╚═╝  ╚═╝\033[40;1;32;40macker\033[0m
 """)
 
 
@@ -276,19 +276,27 @@ signal.signal(signal.SIGINT, quit)
 signal.signal(signal.SIGTERM, quit)
 parser = argparse.ArgumentParser()
 parser.add_argument(u"-faddr", u"--from_address",
-                    help=u"fake from address", required=True)
+                    help=u"fake-from-address", required=True)
 
 parser.add_argument(u"-taddr", u"--to_address",
                     help=u"the address you want to delivery", required=True)
 
+parser.add_argument(u"-s", u"--subject",
+                    help=u"email's subject", required=True)
+
+parser.add_argument(u"-b", u"--body",
+                    help=u"email's body(content)", required=True)
+
 parser.add_argument(u"-tnum", u"--threads_num",
-                    help=u"how many threads you want", default=1, type=int)
+                    help=u"how many threads you want (default is 1)", default=1, type=int)
 
 parser.add_argument(u"-v", u"--verbose",
-                    help=u"verbose level", default=-1, type=int)
+                    help=u"verbose level (choice in [0, 1, 2, 3])", default=-1, type=int)
 
 parser.add_argument(u"-c", u"--crazy_mode",
-                    help=u"Keep sending fake email (** Use with caution **)", action='store_true', default=False)
+                    help=u"Keep sending fake-email (default is False ** Use with caution **)", action='store_true', default=False)
+
+
 args = parser.parse_args()
 
 show_logo()
@@ -297,6 +305,8 @@ quit_flag = print_flag = 1
 ver = -1
 from_addr = args.from_address
 to_addr = args.to_address
+subject = args.subject.decode("utf8")
+content = args.body.replace("\\n", "\r\n").decode("utf8")
 threads_num = args.threads_num if args.threads_num > 0 else 1
 verbose = args.verbose
 crazy_mode = args.crazy_mode
