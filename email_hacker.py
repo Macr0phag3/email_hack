@@ -168,7 +168,8 @@ def superPrint():
     for i, data in enumerate(Data):
         print("\033[K\r%s%s" % (PutColor("No.%d: " % i, "white"),  data))
 
-    print("\n"*(crazy_mode != 1)),
+    if crazy_mode != 1:
+        print("")
     Lock.release()
 
 
@@ -178,8 +179,6 @@ def Print(string, threshold=3, color=u"gray", sign=u"  [-]", flag=1, id=-1):
     if verbose < threshold or (verbose == 0 and threshold > -1):
         if id != -1:
             Data[id] = PutColor(string, color)
-        # else:
-        #    Data[id] = PutColor(Data[id], "cyan")
         return
 
     str_color = u"gray" if color == u"gray" else u"white"
@@ -257,22 +256,20 @@ def quit(signum, frame):
     print("\033[?25h"+PutColor(random.choice([
         u"Goodbye", u"Have a nice day", u"See you later",
         u"Farewell", u"Cheerio", u"Bye",
-    ]), u"white"))
+    ])+" :)", u"white"))
     sys.exit()
 
 
 def show_logo():
     print("\033c\033[?25l")
-    print("-"*30+"""
-
-███████╗     ██╗  ██╗
-██╔════╝     ██║  ██║ by Tr0y
-█████╗       ███████║ v2.0
-██╔══╝       ██╔══██║
-███████╗     ██║  ██║
-╚══════╝mail ╚═╝  ╚═╝acker
-
-"""+"-"*30)
+    print("""
+\033[40;1;40m███████╗     ██╗  ██╗\033[0m
+\033[40;1;40m██╔════╝     ██║  ██║ \033[40;1;33;40mTr0y\033[0m\033[0m
+\033[40;1;40m█████╗       ███████║ \033[40;1;33;40mv2.0\033[0m\033[0m
+\033[40;1;40m██╔══╝       ██╔══██║\033[0m
+\033[40;1;40m███████╗     ██║  ██║\033[0m
+╚══════╝\033[40;1;32;40mmail\033[0m ╚═╝  ╚═╝\033[40;1;32;40macker\033[0m
+""")
 
 
 signal.signal(signal.SIGINT, quit)
