@@ -37,6 +37,7 @@ GIF 演示
 使用 ctrl+c 终止程序
 
 参数:
+
 ```
   -h, --help            输出帮助信息
 
@@ -46,6 +47,11 @@ GIF 演示
   -taddr TO_ADDRESS, --to_address TO_ADDRESS
                         接收方的邮件地址
 
+  -s SUBJECT, --subject SUBJECT
+                        邮件主题
+
+  -b BODY, --body BODY  邮件正文
+  
   -tnum THREADS_NUM, --threads_num THREADS_NUM
                         多线程的线程数，默认为 1
 
@@ -72,10 +78,10 @@ using `python email_hacker.py -h` to get help
 
 ## TODO
 - [x] readme 增加动图演示
-- [ ] 修改一下 `--help` 以及参数的说明
+- [x] 修改一下 `--help` 以及参数的说明
 - [x] 加个 logo
-- [ ] 不硬编码邮件内容
-- [ ] 随机邮件内容
+- [x] 不硬编码邮件内容
+- [x] 随机邮件内容
 - [x] 为 crazy_mode 增加一个级别的 verbose
 - [x] 将单线程模式也开设一个线程，主进程不再负责具体任务，以便统一代码形式。
 - [ ] ~~弃用 `dnspython` 自己写~~
