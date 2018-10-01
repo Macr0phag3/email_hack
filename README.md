@@ -71,7 +71,7 @@ using `python email_hacker.py -h` to get help
   - 修复若干个 bug
 
 ## TODO
-- [ ] readme 增加动图演示
+- [x] readme 增加动图演示
 - [ ] 修改一下 `--help` 以及参数的说明
 - [x] 加个 logo
 - [ ] 不硬编码邮件内容
