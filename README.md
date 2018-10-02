@@ -77,7 +77,7 @@ using `python email_hacker.py -h` to get help
   - 修复若干个 bug
 
 ## TODO
-- [x] 优化固定行输出时，单行内容放不下导致输出混乱的问题。
+- [x] 优化固定行输出时，单行内容放不下导致输出混乱的问题。(超出命令行长度的字符将被省略输出)。
 - [x] readme 增加动图演示
 - [x] 修改一下 `--help` 以及参数的说明
 - [x] 加个 logo
