@@ -8,6 +8,7 @@ import argparse
 import signal
 import sys
 import string
+import shutil
 
 
 class FakeEmail:
@@ -157,17 +158,25 @@ def PutColor(string, color):
 def superPrint():
     Lock.acquire()
 
+    fixed_length = shutil.get_terminal_size().columns
     for index in Indicator("attacking..."):
+
         for i, data in enumerate(Data):
-            print("\033[K\r%s%s" % (PutColor("No.%d: " % i, "white"),  data))
+            length = shutil.get_terminal_size().columns
+            if fixed_length > length:
+                show_logo()
+                fixed_length = length
+
+            print("\033[K\r%s%s" % (PutColor("No.%d: " % i, "white"),
+                                    data if len(data) < length else data[:length-3]+"..."))
 
         print(PutColor("\r\033[K[%d]" % succ_num, "green")+PutColor(index, "white")+"\033[1A")
         print("\033[%dA" % (len(Data)+1))
         sleep(0.1)
 
     for i, data in enumerate(Data):
-        print("\033[K\r%s%s" % (PutColor("No.%d: " % i, "white"),  data))
-
+        print("\033[K\r%s%s" % (PutColor("No.%d: " % i, "white"),
+                                data if len(data) < length else data[:length-3]+"..."))
     if crazy_mode != 1:
         print("")
     Lock.release()
