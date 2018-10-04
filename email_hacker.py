@@ -8,7 +8,7 @@ import argparse
 import signal
 import sys
 import string
-import shutil
+import os
 
 
 class FakeEmail:
@@ -158,11 +158,13 @@ def PutColor(string, color):
 def superPrint():
     Lock.acquire()
 
-    fixed_length = shutil.get_terminal_size().columns
+    _, fixed_length = os.popen('stty size', 'r').read().split()
+    fixed_length = int(fixed_length)
     for index in Indicator("attacking..."):
 
         for i, data in enumerate(Data):
-            length = shutil.get_terminal_size().columns
+            _, length = os.popen('stty size', 'r').read().split()
+            length = int(length)
             if fixed_length > length:
                 show_logo()
                 fixed_length = length
