@@ -343,7 +343,7 @@ elif threads_num > 1:
 
 if ver != -1:
     if vars(__builtins__).get('raw_input', input)(PutColor(u"[!]", "yellow")+PutColor("type [yes]/no: ", "white")) != "no":
-        verbose = v
+        verbose = ver
         Print(u"as you wish\n", color=u"green", threshold=0, sign=u"[*]", flag=0)
     else:
         Print(u"in a mess, of course\n", color=u"yellow", threshold=0, sign=u"[!]", flag=0)
