@@ -8,7 +8,7 @@ import argparse
 import signal
 import sys
 import string
-import shutil
+import os
 
 
 class FakeEmail:
@@ -158,11 +158,13 @@ def PutColor(string, color):
 def superPrint():
     Lock.acquire()
 
-    fixed_length = shutil.get_terminal_size().columns
+    _, fixed_length = os.popen('stty size', 'r').read().split()
+    fixed_length = int(fixed_length)
     for index in Indicator("attacking..."):
 
         for i, data in enumerate(Data):
-            length = shutil.get_terminal_size().columns
+            _, length = os.popen('stty size', 'r').read().split()
+            length = int(length)
             if fixed_length > length:
                 show_logo()
                 fixed_length = length
@@ -272,12 +274,12 @@ def quit(signum, frame):
 def show_logo():
     print("\033c\033[?25l")
     print("""
-\033[40;1;40m███████╗     ██╗  ██╗\033[0m
-\033[40;1;40m██╔════╝     ██║  ██║ \033[40;1;33;40mTr0y\033[0m\033[0m
-\033[40;1;40m█████╗       ███████║ \033[0m
-\033[40;1;40m██╔══╝       ██╔══██║ \033[40;1;33;40mv2.0\033[0m\033[0m
-\033[40;1;40m███████╗     ██║  ██║\033[0m
-╚══════╝\033[40;1;32;40mmail\033[0m ╚═╝  ╚═╝\033[40;1;32;40macker\033[0m
+\033[40;1;40m ███████╗     ██╗  ██╗\033[0m
+\033[40;1;40m ██╔════╝     ██║  ██║ \033[40;1;33;40mTr0y\033[0m\033[0m
+\033[40;1;40m █████╗       ███████║ \033[0m
+\033[40;1;40m ██╔══╝       ██╔══██║ \033[40;1;33;40mv2.0\033[0m\033[0m
+\033[40;1;40m ███████╗     ██║  ██║\033[0m
+ ╚══════╝\033[40;1;32;40mmail\033[0m ╚═╝  ╚═╝\033[40;1;32;40macker\033[0m
 """)
 
 
