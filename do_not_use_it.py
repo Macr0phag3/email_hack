@@ -31,28 +31,71 @@ class FakeEmail:
         self.succ_num = 0
 
     def Connect(self):
+        """
+        作用: 连接到 SMTP 服务器
+
+        返回类型:
+            元组
+
+        返回值:
+            (True, SMTP 服务器的响应)
+            (False, 报错信息)
+        """
+
         self.sk = socket.socket()
-        self.sk.settimeout(self.timeout)
+        self.sk.settimeout(self.timeout)  # 连接超时时间
 
         try:
             Print(u"connect to %s:%s " % (self.SMTP_addr, str(self.port)), sign=u"[+]")
             self.sk.connect((self.SMTP_addr, self.port))
-        except Exception as e:
-            return (0, str(e))
+        except Exception as e:  # 连接超时
+            return (False, str(e))
 
-        return self.Recv(check=u"220")
+        return self.Recv(check=u"220")  # 由 Recv 接管返回值
 
     def Send(self, msg):
+        """
+        作用: 通过 socket 向 SMTP 服务器发送信息
+
+        参数:
+            msg: 要发送的信息
+
+        返回类型:
+            布尔
+
+        返回值:
+            True
+            False
+        """
+
+        # 发送的消息以 "\r\n" 作为分割的标志
+        # 分割后按顺序发送
         for result in msg.split(u"\r\n"):
             try:
-                self.sk.sendall((result+u"\r\n").encode("utf8"))
+
+                self.sk.sendall((result+u"\r\n").encode("utf8"))  # 信息必须以 "\r\n" 结尾
                 Print(result, threshold=2, color=u"yellow", sign=u"=> ")
-            except Exception as e:
+            except Exception as e:  # 发送失败
                 Print(str(e), threshold=0, color=u"red", sign=u"=> ", id=self.id)
-                return 0
-        return 1
+                return False
+
+        return True
 
     def Recv(self, check=u"", threshold=2):
+        """
+        作用: 通过 socket 向 SMTP 服务器发送信息
+
+        参数:
+            msg: 要发送的信息
+
+        返回类型:
+            布尔
+
+        返回值:
+            True
+            False
+        """
+
         try:
             data = [i.decode(u"utf8") for i in self.sk.recv(1024).split(b"\r\n") if i]
             assert data
@@ -272,7 +315,13 @@ def quit(signum, frame):
 
 
 def show_logo():
-    print("\033c\033[?25l")
+    """
+    打印 logo
+
+    - 打印 logo 的时候总是清空终端
+    """
+
+    print("\033c\033[?25l")  # 清空终端
     print("""
 \033[40;1;40m ███████╗     ██╗  ██╗\033[0m
 \033[40;1;40m ██╔════╝     ██║  ██║ \033[40;1;33;40mTr0y\033[0m\033[0m
@@ -280,7 +329,7 @@ def show_logo():
 \033[40;1;40m ██╔══╝       ██╔══██║ \033[40;1;33;40mv2.0\033[0m\033[0m
 \033[40;1;40m ███████╗     ██║  ██║\033[0m
  ╚══════╝\033[40;1;32;40mmail\033[0m ╚═╝  ╚═╝\033[40;1;32;40macker\033[0m
-""")
+""")  # 打印 logo
 
 
 signal.signal(signal.SIGINT, quit)
