@@ -86,3 +86,4 @@ using `python email_hacker.py -h` to get help
 - [x] 随机邮件内容
 - [x] 为 crazy_mode 增加一个级别的 verbose
 - [x] 将单线程模式也开设一个线程，主进程不再负责具体任务，以便统一代码形式。
+- [ ] 重构代码，简化之
