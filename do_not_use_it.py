@@ -27,6 +27,11 @@ class EmailAgent:  # 邮件类
         pass
 
 
+class DNSQuery:  # DNS 解析
+    def __init__(self):
+        pass
+
+
 class SpamEmail:  # 伪造邮件
     def __init__(self):
         pass
