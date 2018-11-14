@@ -55,7 +55,7 @@ class Pad:
         self.the_pad.resize(self.length, self.width)
         self.refresh()
         """
-        print len(string)
+        self.the_pad.addstr(x, y, str(len(string)))
         if len(string) > self.length:
             self.length = len(string)
             self.the_pad.resize(self.length, self.width)
