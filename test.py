@@ -23,7 +23,7 @@ class Pad:
 
     def init_pad(self):
         self.the_pad = curses.newwin(self.length, self.width)
-        #self.the_pad = curses.newpad(self.length, self.width)
+        # self.the_pad = curses.newpad(self.length, self.width)
 
         self.the_pad.keypad(1)
 
@@ -50,16 +50,13 @@ class Pad:
 
     def draw(self, x, y, string):
         """
-        print len(string)
-        self.length = 10000
-        self.the_pad.resize(self.length, self.width)
-        self.refresh()
+
         """
-        self.the_pad.addstr(x, y, str(len(string)))
-        if len(string) > self.length:
-            self.length = len(string)
+
+        # 字符太长，就调整 win 的宽度来适应
+        if len(string) > self.width:
+            self.width = len(string)
             self.the_pad.resize(self.length, self.width)
-            self.refresh()
 
         try:
             self.the_pad.addstr(x, y, string)
@@ -77,15 +74,17 @@ class Pad:
         while 1:
             cmd = self.the_pad.getch()
             if cmd == curses.KEY_DOWN:
-                if self.x < self.width:
-                    self.x += 1
+                self.the_pad.scroll(1)
+                # if self.x < self.width:
+                #    self.x += 1
+
             elif cmd == curses.KEY_UP:
                 if self.x > 0:
                     self.x -= 1
             else:
                 break
 
-            self.refresh()
+            # self.refresh()
 
         curses.endwin()
 
@@ -95,4 +94,3 @@ pad = Pad(100, 10)
 for i in range(200):
     pad.draw(i, 0, str(i)*100)
     time.sleep(0.5)
-    break
