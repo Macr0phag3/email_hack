@@ -94,6 +94,8 @@ class Screen(object):
             elif ch == curses.ascii.ESC:
                 break
 
+        self.window.endwin()
+
     def display(self):
         """Display the items on window"""
         self.window.erase()
