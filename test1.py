@@ -88,6 +88,7 @@ class Screen(object):
 
         os.system("printf '\e]50;ClearScrollback\a'")  # 兼容 iTerm2
         curses.endwin()
+        os.system("printf '\e]50;ClearScrollback\a'")
 
     def input_stream(self):
         """Waiting an input and run a proper method according to type of input"""
@@ -131,11 +132,11 @@ class Screen(object):
 
             # 1. 字符串长度超出默认 win 的长度，需要扩大 win
             # 2. 终端宽度被调整，需要 resize
-            """
+
             if self.width < len(data) or self.window.getmaxyx()[1] != self.width:
                 self.window.resize(self.height, len(data)+5)
                 self.height, self.width = self.window.getmaxyx()
-            """
+
             # try:
             self.window.addstr(idx, 0, data[self.hori_len:])  # , curses.color_pair(1))
             # except Exception:

@@ -6,6 +6,17 @@ import time
 import random
 
 
+class CtrlC(object):
+    def __init__(self, func):
+        self._func = func
+
+    def __call__(self):
+        try:
+            self._func()
+        except KeyboardInterrupt:
+            pass
+
+
 class Screen:
     UP = -1
     DOWN = 1
@@ -41,6 +52,7 @@ class Screen:
         self.height, self.width = self.window.getmaxyx()
         self.window.keypad(True)
         self.window.nodelay(True)
+
         curses.noecho()
         curses.cbreak()
 
@@ -54,8 +66,7 @@ class Screen:
 
     def input_stream(self):
         """Waiting an input and run a proper method according to type of input"""
-        while True:
-
+        while 1:
             self.display()
 
             ch = self.window.getch()
@@ -84,9 +95,22 @@ class Screen:
 
             # 1. 字符串长度超出默认 win 的长度，需要扩大 win
             # 2. 终端宽度被调整，需要 resize
-            if self.width < len(data) or self.window.getmaxyx()[1] != self.width:
-                self.window.resize(self.height, len(data)+5)
-                self.height, self.width = self.window.getmaxyx()
+
+            tmp_height, tmp_width = self.window.getmaxyx()
+
+            if self.width < len(data):
+                self.window.resize(tmp_height, len(data)+5)
+                self.width = self.window.getmaxyx()[1]
+
+            if tmp_width != self.width:
+                self.window.resize(self.height, tmp_width)
+                self.width = self.window.getmaxyx()[1]
+
+            if tmp_height != self.height:
+                self.window.resize(self.height, self.width)
+                self.max_lines = tmp_height
+                #self.height, self.width = self.window.getmaxyx()
+                self.top = 0
 
             self.window.addstr(idx, 0, data[self.hori_len:])
 
@@ -145,6 +169,7 @@ class Line:
         self.data = self.header+self.body
 
 
+@CtrlC
 def process_data():
     '''
     处理数据
@@ -166,15 +191,16 @@ ITEMS = [Line(num, "starting...") for num in range(THREADS_NUM)]
 
 # ------------------------------
 
-
+"""
 thread_screen = threading.Thread(target=Screen)
+thread_screen.setDaemon(True)
 thread_screen.start()  # 启动线程 thread_screen 用于展示数据
+"""
 
 thread_data = threading.Thread(target=process_data)
+thread_data.setDaemon(True)
 thread_data.start()  # 启动线程 thread_data 用于处理数据
 
-thread_screen.join()  # 阻塞是必须的
-thread_data.join()
-
+Screen()
 
 print "Bye~"
