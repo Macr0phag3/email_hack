@@ -1,96 +1,150 @@
-# -*- coding: utf-8 -*-
-
+# encoding: utf8
 import curses
-import time
+import os
 import threading
+import time
 
 
-class Pad:
-    def __init__(self, length, width):
-        self.length = length  # 长度
-        self.width = width  # 宽度
+class Screen:
+    UP = -1
+    DOWN = 1
 
-        self.length_show = self.length  # 展现的长度
-        self.width_show = self.width/3  # 展现的宽度
+    LEFT = -1
+    RIGHT = 1
 
-        self.x = 0
-        self.y = 0  # lake max y :)
+    COLORS = {
+        "red": 1,
+        "yellow": 2,
+        "cyan": 3,
+        "green": 4,
+        "white": 5,
+        "gray": 6,
+    }
 
-        curses.initscr()
+    def __init__(self):
+        self.init_curses()
+
+        self.top = 0
+        self.items = items
+        self.bottom = len(self.items)
+        self.current = self.bottom - 1
+        self.max_lines = curses.LINES
+        self.hori_len = 0
+
+        self.run()
+
+    def init_curses(self):
+        """Setup the curses"""
+        self.window = curses.initscr()
+        self.height, self.width = self.window.getmaxyx()
+        self.window.keypad(True)
+
         curses.noecho()
         curses.cbreak()
-        self.init_pad()
 
-    def init_pad(self):
-        self.the_pad = curses.newwin(self.length, self.width)
-        # self.the_pad = curses.newpad(self.length, self.width)
+    def put_color(self, color, bold=False):
+        bold = [bold, curses.A_BOLD][bold]
 
-        self.the_pad.keypad(1)
+        if color == "white":
+            return -1
 
-        show_thread = threading.Thread(target=self.show)
-        show_thread.start()
+        return curses.color_pair(1) | curses.A_RIGHT
 
-    def refresh(self):
-        # self.x: 矩形左上角的 x 坐标（即 @ 的 x 坐标）
-        # self.y: 矩形左上角的 y 坐标（即 @ 的 y 坐标）
-        # 0: 起始的 x 坐标
-        # 0: 起始的 y 坐标
-        # self.width_show: 结束的 x 坐标
-        # self.length: 结束的 y 坐标
-        #
-        # 示例
-        # **@@@@@******
-        # **@@@@@******
-        # **@@@@@******
-        # *************
-        #
-        # 左上角的 @ 所在的坐标为：self.x, self.y，这里即为 (2, 0)
-        # 如果想刷新上面所有的 @，则后面 4 个参数应写为：()
-        self.the_pad.refresh()  # self.x, self.y, 0, 0, self.width, self.length)
-
-    def draw(self, x, y, string):
-        """
-
-        """
-
-        # 字符太长，就调整 win 的宽度来适应
-        if len(string) > self.width:
-            self.width = len(string)
-            self.the_pad.resize(self.length, self.width)
+    def run(self):
+        """Continue running the TUI until get interrupted"""
 
         try:
-            self.the_pad.addstr(x, y, string)
-        except curses.error:
-            return False
+            self.input_stream()
+        except KeyboardInterrupt:
+            pass
 
-        self.refresh()
-
-        """
-        if x > self.width_show:
-            self.x += 1
-        """
-
-    def show(self):
-        while 1:
-            cmd = self.the_pad.getch()
-            if cmd == curses.KEY_DOWN:
-                self.the_pad.scroll(1)
-                # if self.x < self.width:
-                #    self.x += 1
-
-            elif cmd == curses.KEY_UP:
-                if self.x > 0:
-                    self.x -= 1
-            else:
-                break
-
-            # self.refresh()
-
+        os.system("printf '\e]50;ClearScrollback\a'")  # 兼容 iTerm2
         curses.endwin()
 
+    def input_stream(self):
+        """Waiting an input and run a proper method according to type of input"""
+        while True:
 
-pad = Pad(100, 10)
+            self.display()
 
-for i in range(200):
-    pad.draw(i, 0, str(i)*100)
-    time.sleep(0.5)
+            ch = self.window.getch()
+
+            if ch == curses.KEY_UP:
+                self.scroll(self.UP)
+
+            elif ch == curses.KEY_DOWN:
+                self.scroll(self.DOWN)
+
+            elif ch == curses.KEY_LEFT:
+                self.scroll(self.LEFT, horizontal=True)
+
+            elif ch == curses.KEY_RIGHT:
+                self.scroll(self.RIGHT, horizontal=True)
+
+            elif ch == ord("q"):
+                break
+
+    def display(self):
+        """Display the items on window"""
+        self.window.erase()
+
+        for idx, item in enumerate(self.items[self.top:self.top + self.max_lines]):
+            data = item
+
+            # 1. 字符串长度超出默认 win 的长度，需要扩大 win
+            # 2. 终端宽度被调整，需要 resize
+            if self.width < len(data) or self.window.getmaxyx()[1] != self.width:
+                self.window.resize(self.height, len(data)+5)
+                self.height, self.width = self.window.getmaxyx()
+
+            self.window.addstr(idx, 0, data[self.hori_len:])
+
+        self.window.refresh()
+
+    def scroll(self, direction, horizontal=False):
+        """Scrolling the window when pressing up/down arrow keys"""
+
+        if horizontal:
+            if (direction == self.LEFT) and self.hori_len > 0:
+                self.hori_len -= 1
+
+            elif (direction == self.DOWN):
+                self.hori_len += 1
+        else:
+            if (direction == self.UP) and (self.top > 0):
+                self.top += direction
+
+            elif (direction == self.DOWN) and (self.top + self.max_lines < self.bottom):
+                self.top += direction
+
+
+def create_screen():
+    Screen()
+
+
+def process_data():
+    global items
+
+    for i in range(10):
+        items[i] += "1"
+        time.sleep(1)
+
+
+threads_num = 20
+
+items = ['']*threads_num
+
+"""
+items = ["{0:{fill}{align}{length}}".format(
+    "No."+str(num)+": ", length=len(str(threads_num))+5, fill=" ", align=">"
+) for num in range(threads_num)]
+"""
+
+thread_screen = threading.Thread(target=create_screen)
+thread_screen.start()
+
+thread_data = threading.Thread(target=process_data)
+thread_data.start()
+thread_data.join()
+
+print "Bye~"
