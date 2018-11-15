@@ -88,4 +88,4 @@ using `python email_hacker.py -h` to get help
 - [x] 将单线程模式也开设一个线程，主进程不再负责具体任务，以便统一代码形式。
 - [ ] 启用 python-dns 自己解析
 - [ ] 重构代码，简化之。（作为联系设计模式的实验品）
-
+  - [x] 先画一个 CLI？

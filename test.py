@@ -101,6 +101,12 @@ class Screen:
 
             len(data) > tmp_width > self.width: len(data)
             len(data) > self.width > tmp_width: len(data) √
+
+            这样是不行的，别问我为啥 :D
+            maxwidth = max(self.width, tmp_width, len(data))
+            if maxwidth != self.width or 1:
+                self.width = maxwidth
+                self.window.resize(self.height, self.width)
             '''
 
             # 字符串长度超出默认 win 的长度，需要 resize
@@ -112,14 +118,6 @@ class Screen:
             if tmp_width != self.width:
                 self.width = max(self.width, tmp_width)
                 self.window.resize(self.height, self.width)
-
-            '''
-            这样是不行的，别问我为啥 :D
-            maxwidth = max(self.width, tmp_width, len(data))
-            if maxwidth != self.width or 1:
-                self.width = maxwidth
-                self.window.resize(self.height, self.width)
-            '''
 
             # 终端高度被调整，需要 resize
             if tmp_height != self.height:
@@ -164,12 +162,14 @@ class Screen:
         except KeyboardInterrupt:
             pass
 
-         # 兼容 iTerm2
+        # 兼容 iTerm2
         # os.system("printf '\e]50;ClearScrollback\a'")
-        # 兼容个屁 :D
+        # 兼容个屁 (:D
         curses.endwin()
 
-        EXIT_FLAG = 0  # screen 的线程 gg 的时候，退出 process_data
+        # screen 的线程结束的时候
+        # 通知 process_data 结束
+        EXIT_FLAG = 0
 
 
 class Line:
