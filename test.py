@@ -120,6 +120,8 @@ class Screen:
         os.system("printf '\e]50;ClearScrollback\a'")  # 兼容 iTerm2
         curses.endwin()
 
+        EXIT_FLAG = 0  # screen 的线程 gg 的时候，退出 process_data
+
 
 class Line:
     '''
@@ -172,9 +174,7 @@ thread_data = threading.Thread(target=process_data)
 thread_data.start()  # 启动线程 thread_data 用于处理数据
 
 thread_screen.join()  # 阻塞是必须的
+thread_data.join()
 
-
-# ------------- 准备退出 -----------------
-EXIT_FLAG = 0  # screen 的线程 gg 的时候，退出 process_data
 
 print "Bye~"
