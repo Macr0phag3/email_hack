@@ -88,7 +88,6 @@ class Screen(object):
 
         os.system("printf '\e]50;ClearScrollback\a'")  # 兼容 iTerm2
         curses.endwin()
-        os.system("printf '\e]50;ClearScrollback\a'")
 
     def input_stream(self):
         """Waiting an input and run a proper method according to type of input"""

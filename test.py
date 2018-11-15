@@ -39,7 +39,6 @@ class Screen:
         self.top = 0
         self.items = ITEMS
         self.bottom = len(self.items)
-        self.current = self.bottom - 1
         self.max_lines = curses.LINES
 
         self.hori_len = 0
@@ -108,9 +107,9 @@ class Screen:
 
             if tmp_height != self.height:
                 self.window.resize(self.height, self.width)
+                self.top = 0
                 self.max_lines = tmp_height
                 #self.height, self.width = self.window.getmaxyx()
-                self.top = 0
 
             self.window.addstr(idx, 0, data[self.hori_len:])
 
