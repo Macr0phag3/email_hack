@@ -140,7 +140,7 @@ items = ["{0:{fill}{align}{length}}".format(
 ) for num in range(threads_num)]
 """
 
-thread_screen = threading.Thread(target=create_screen)
+thread_screen = threading.Thread(target=Screen)
 thread_screen.start()
 
 thread_data = threading.Thread(target=process_data)
