@@ -1,6 +1,5 @@
 # encoding: utf8
 import curses
-import os
 import threading
 import time
 import random
@@ -92,43 +91,68 @@ class Screen:
         for idx, item in enumerate(self.items[self.top:self.top + self.max_lines]):
             data = item.data
 
-            # 1. 字符串长度超出默认 win 的长度，需要扩大 win
-            # 2. 终端宽度被调整，需要 resize
-
             tmp_height, tmp_width = self.window.getmaxyx()
+            '''
+            self.width > len(data) > tmp_width: self.width √
+            self.width > tmp_width > len(data): self.width
 
+            tmp_width > self.width > len(data): tmp_width
+            tmp_width > len(data) > self.width: tmp_width √
+
+            len(data) > tmp_width > self.width: len(data)
+            len(data) > self.width > tmp_width: len(data) √
+            '''
+
+            # 字符串长度超出默认 win 的长度，需要 resize
             if self.width < len(data):
-                self.window.resize(tmp_height, len(data)+5)
-                self.width = self.window.getmaxyx()[1]
+                self.width = len(data)
+                self.window.resize(self.height, self.width)
 
+            # 终端宽度被调整，需要 resize
             if tmp_width != self.width:
-                self.window.resize(self.height, tmp_width)
-                self.width = self.window.getmaxyx()[1]
+                self.width = max(self.width, tmp_width)
+                self.window.resize(self.height, self.width)
 
+            '''
+            这样是不行的，别问我为啥 :D
+            maxwidth = max(self.width, tmp_width, len(data))
+            if maxwidth != self.width or 1:
+                self.width = maxwidth
+                self.window.resize(self.height, self.width)
+            '''
+
+            # 终端高度被调整，需要 resize
             if tmp_height != self.height:
+                self.max_lines = min(self.height, tmp_height)
+                self.height = max(self.height, tmp_height)
                 self.window.resize(self.height, self.width)
                 self.top = 0
-                self.max_lines = tmp_height
-                #self.height, self.width = self.window.getmaxyx()
 
             self.window.addstr(idx, 0, data[self.hori_len:])
 
         self.window.refresh()
 
     def scroll(self, direction, horizontal=False):
-        """Scrolling the window when pressing up/down arrow keys"""
+        '''
+        垂直滚动与水平滚动
+        '''
 
-        if horizontal:
-            if (direction == self.LEFT) and self.hori_len > 0:
-                self.hori_len -= 1
+        if horizontal:  # 水平滚动
+            if (
+                # self.hori_len > 0：如果已经到最左边，就不滚动了
+                direction == self.LEFT and self.hori_len > 0
+            ) or (
+                # 右边不限制
+                direction == self.RIGHT
+            ):
+                self.hori_len += direction
 
-            elif (direction == self.DOWN):
-                self.hori_len += 1
-        else:
-            if (direction == self.UP) and (self.top > 0):
-                self.top += direction
-
-            elif (direction == self.DOWN) and (self.top + self.max_lines < self.bottom):
+        else:  # 垂直滚动
+            if (
+                direction == self.UP and self.top > 0
+            ) or (
+                direction == self.DOWN and self.top + self.max_lines < self.bottom
+            ):
                 self.top += direction
 
     def run(self):
@@ -140,7 +164,9 @@ class Screen:
         except KeyboardInterrupt:
             pass
 
-        os.system("printf '\e]50;ClearScrollback\a'")  # 兼容 iTerm2
+         # 兼容 iTerm2
+        # os.system("printf '\e]50;ClearScrollback\a'")
+        # 兼容个屁 :D
         curses.endwin()
 
         EXIT_FLAG = 0  # screen 的线程 gg 的时候，退出 process_data
@@ -183,7 +209,7 @@ def process_data():
 # ---------- 全局变量 -----------
 EXIT_FLAG = 1
 
-THREADS_NUM = 20
+THREADS_NUM = 50
 
 # 每一行的数据
 ITEMS = [Line(num, "starting...") for num in range(THREADS_NUM)]
