@@ -92,7 +92,7 @@ class EmailBomb:
 
                 # subject:
                 self.update_status("send subject")
-                code, msg = self.emailer.Send("subject: "+subject, recv=False)
+                code, msg = self.emailer.Send("subject: "+subject+"\r\n", recv=False)
                 if not code:
                     self.update_status(msg)
                     continue
