@@ -76,18 +76,17 @@ class EmailBomb:
             if not code:
                 continue
 
-            # body:
-            print "send body"
-            code, msg = self.emailer.Send(
-                content+u"\r\n\r\n你的专属链接为："+"".join(
-                    random.choice(string.hexdigits)
-                    for i in range(32)
-                )+"\r\n.\r\n",  # 随机化部分邮件内容
+            break  # 上面都发送成功
 
-                check="250"  # 状态码为 250 说明发送成功
-            )
+        # body:
+        print "send body"
+        code, msg = self.emailer.Send(
+            content+u"\r\n\r\n你的专属链接为："+"".join(
+                random.choice(string.hexdigits)
+                for i in range(32)
+            )+"\r\n.\r\n",  # 随机化部分邮件内容
 
-            if code:
-                break
+            check="250"  # 状态码为 250 说明发送成功
+        )
 
         return (code, msg)
