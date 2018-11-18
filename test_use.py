@@ -78,7 +78,7 @@ class Screen:
         self.window.erase()
 
         for idx, item in enumerate(CLIENTS[self.top:self.top + self.max_lines]):
-            data = item.status
+            data = item.status[0] if len(item.status) == 1 else item.status.pop()
 
             tmp_height, tmp_width = self.window.getmaxyx()
             '''
@@ -126,6 +126,7 @@ class Screen:
                 raise
 
         self.window.refresh()
+        time.sleep(0.5)
 
     def scroll(self, direction, horizontal=False):
         '''
@@ -173,7 +174,6 @@ class Screen:
 
 THREADS_NUM = 3
 EXIT_FLAG = 1
-
 
 CLIENTS = [
     EmailBomb.EmailBomb(
