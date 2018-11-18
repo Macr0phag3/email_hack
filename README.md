@@ -92,3 +92,4 @@ using `python email_hacker.py -h` to get help
   - [x] 先画一个 CLI. 2018.11.16 00:15:42
   - [ ] 优化一下邮件功能，准备与 CLI 对接.
     - [x] FakeEmail. 2018.11.18 14:54:00
+    - [x] EmailBomb. 2018.11.18 16:00:39
