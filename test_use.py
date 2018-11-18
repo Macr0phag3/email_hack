@@ -3,6 +3,7 @@
 import EmailBomb
 import threading
 import curses
+import time
 
 
 class Screen:
@@ -25,8 +26,7 @@ class Screen:
         self.init_curses()
 
         self.top = 0
-        self.items = CLIENTS
-        self.bottom = len(self.items)
+        self.bottom = len(CLIENTS)
         self.max_lines = curses.LINES
 
         self.hori_len = 0
@@ -77,7 +77,7 @@ class Screen:
         """Display the CLIENTS on window"""
         self.window.erase()
 
-        for idx, item in enumerate(self.items[self.top:self.top + self.max_lines]):
+        for idx, item in enumerate(CLIENTS[self.top:self.top + self.max_lines]):
             data = item.status
 
             tmp_height, tmp_width = self.window.getmaxyx()
@@ -102,11 +102,13 @@ class Screen:
             if self.width < len(data):
                 self.width = len(data)
                 self.window.resize(self.height, self.width)
+                time.sleep(1)
 
             # 终端宽度被调整，需要 resize
             if tmp_width != self.width:
                 self.width = max(self.width, tmp_width)
                 self.window.resize(self.height, self.width)
+                time.sleep(1)
 
             # 终端高度被调整，需要 resize
             if tmp_height != self.height:
@@ -114,8 +116,14 @@ class Screen:
                 self.height = max(self.height, tmp_height)
                 self.window.resize(self.height, self.width)
                 self.top = 0
+                time.sleep(1)
 
-            self.window.addstr(idx, 0, data[self.hori_len:])
+            try:
+                self.window.addstr(idx, 0, data[self.hori_len:])
+            except Exception as e:
+                with open("./log", "a") as fp:
+                    fp.write(data[self.hori_len:])
+                raise
 
         self.window.refresh()
 
@@ -153,7 +161,7 @@ class Screen:
 
         # 兼容 iTerm2
         # os.system("printf '\e]50;ClearScrollback\a'")
-        # 兼容个屁 (:D
+        # 兼容个屁 :D
         curses.endwin()
 
         # screen 的线程结束的时候
@@ -176,24 +184,10 @@ CLIENTS = [
 ]  # 创建攻击 client
 # ------------------------------
 
-
-# thread = threading.Thread(target=watcher).start()  # 对接 CLI 展示数据
-
 for client in CLIENTS:
     thread = threading.Thread(target=client.attack, args=("hello! my friend!", "hr: you got it!",))
     thread.setDaemon(True)
     thread.start()  # 启动攻击 client
 
 
-Screen()
-
-'''
-# 等待 ctrl+c
-try:
-    while 1:
-        pass
-except KeyboardInterrupt:
-    exit_flag = 0
-    for client in clients:
-        client.exit_flag = exit_flag
-'''
+Screen()  # 对接 CLI 展示数据
