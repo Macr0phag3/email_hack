@@ -7,7 +7,7 @@ import time
 
 class EmailBomb:
     def __init__(self, id, to_addr, from_addr, SMTP_addr="", port=25, timeout=10):
-        self.status_header = "No.{}".format(id)
+        self.status_header = "No.{}: ".format(id)
         self.status_body = "creating..."
         self.to_addr = to_addr
         self.from_addr = from_addr
