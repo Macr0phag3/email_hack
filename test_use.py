@@ -179,7 +179,7 @@ CLIENTS = [
     EmailBomb.EmailBomb(
         id=id,
         from_addr="hr@361.com",
-        to_addr="15619047890@163.com",
+        to_addr="@163.com",
     ) for id in range(THREADS_NUM)
 ]  # 创建攻击 client
 # ------------------------------
