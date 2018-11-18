@@ -75,7 +75,7 @@ class Email:
             else:
                 return (True, "send(without reply) success")
 
-        return (False, "send "+msg+"failed: "+err)
+        return (False, "send msg failed: "+err)
 
     def Recv(self, check=u""):
         try:
