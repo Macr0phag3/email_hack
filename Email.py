@@ -5,6 +5,10 @@ import dns.resolver
 
 
 class Email:
+    '''
+    just for FakeEmail and EmailBomb
+    '''
+
     def __init__(self, to_addr, from_addr, SMTP_addrs, port, timeout):
         self.to_addr = to_addr
         self.from_addr = from_addr
@@ -58,6 +62,7 @@ class Email:
         msgs: 待发送的消息
         recv: 是否等待返回的消息
         '''
+
         for msg in msgs.split(u"\r\n"):
             try:
                 self.sk.sendall((msg+u"\r\n").encode("utf8"))

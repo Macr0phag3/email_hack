@@ -27,8 +27,8 @@ class FakeEmail:
         攻击启动
         '''
 
+        # 建立连接
         code, msg = self.emailer.Connect()
-        print code, msg
 
         # 建立会话
         print "send ehlo"
@@ -84,7 +84,3 @@ class FakeEmail:
         )
 
         return (code, msg)
-
-
-test = FakeEmail(from_addr="hr@361.com", to_addr="15619047890@163.com")
-print test.attack("hello! my friend!", "hr: you got it!")
