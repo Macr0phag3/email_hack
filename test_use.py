@@ -30,32 +30,40 @@ class Screen:
         self.max_lines = curses.LINES
 
         self.hori_len = 0
+        self.EXIT_FLAG = 0
 
-        self.run()
+        # self.run()
 
     def init_curses(self):
         """Setup the curses"""
         self.window = curses.initscr()
         self.height, self.width = self.window.getmaxyx()
         self.window.keypad(True)
-        self.window.nodelay(True)
+        # self.window.nodelay(True)
 
         curses.noecho()
+        curses.curs_set(False)
         curses.cbreak()
+        curses.start_color()
+        curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
+        curses.init_pair(2, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+        curses.init_pair(3, curses.COLOR_WHITE, curses.COLOR_BLACK)
+        curses.init_pair(4, curses.COLOR_GREEN, curses.COLOR_BLACK)
 
-    def put_color(self, color, bold=False):
+    def put_color(self, color, bold=True):
         bold = [bold, curses.A_BOLD][bold]
 
-        if color == "white":
-            return -1
-
-        return curses.color_pair(1) | curses.A_RIGHT
+        return {
+            "red": curses.color_pair(1),
+            "yellow": curses.color_pair(2),
+            "white": curses.color_pair(3),
+            "green": curses.color_pair(4),
+        }[color] | bold
 
     def input_stream(self):
         """Waiting an input and run a proper method according to type of input"""
-        while 1:
-            self.display()
 
+        while not self.EXIT_FLAG:
             ch = self.window.getch()
 
             if ch == curses.KEY_UP:
@@ -71,62 +79,87 @@ class Screen:
                 self.scroll(self.RIGHT, horizontal=True)
 
             elif ch == ord("q"):
-                break
+                self.EXIT_FLAG = 1
+
+        # while any([client.running for client in CLIENTS]):
+            # self.display()
+
+            # time.sleep(0.1)
 
     def display(self):
         """Display the CLIENTS on window"""
-        self.window.erase()
-
-        for idx, item in enumerate(CLIENTS[self.top:self.top + self.max_lines]):
-            data = item.status[0] if len(item.status) == 1 else item.status.pop()
-
-            tmp_height, tmp_width = self.window.getmaxyx()
-            '''
-            self.width > len(data) > tmp_width: self.width √
-            self.width > tmp_width > len(data): self.width
-
-            tmp_width > self.width > len(data): tmp_width
-            tmp_width > len(data) > self.width: tmp_width √
-
-            len(data) > tmp_width > self.width: len(data)
-            len(data) > self.width > tmp_width: len(data) √
-
-            这样是不行的，别问我为啥 :D
-            maxwidth = max(self.width, tmp_width, len(data))
-            if maxwidth != self.width or 1:
-                self.width = maxwidth
-                self.window.resize(self.height, self.width)
-            '''
-
-            # 字符串长度超出默认 win 的长度，需要 resize
-            if self.width < len(data):
-                self.width = len(data)
-                self.window.resize(self.height, self.width)
-                time.sleep(1)
-
-            # 终端宽度被调整，需要 resize
-            if tmp_width != self.width:
-                self.width = max(self.width, tmp_width)
-                self.window.resize(self.height, self.width)
-                time.sleep(1)
-
-            # 终端高度被调整，需要 resize
-            if tmp_height != self.height:
-                self.max_lines = min(self.height, tmp_height)
-                self.height = max(self.height, tmp_height)
-                self.window.resize(self.height, self.width)
-                self.top = 0
-                time.sleep(1)
-
+        condition = 1
+        while condition:
             try:
-                self.window.addstr(idx, 0, data[self.hori_len:])
-            except Exception as e:
-                with open("./log", "a") as fp:
-                    fp.write(data[self.hori_len:])
-                raise
+                self.window.erase()
+                if self.EXIT_FLAG:
+                    condition = any([client.running for client in CLIENTS])
+                    for client in CLIENTS:
+                        if not client.exit_flag:
+                            client.exit_flag = self.EXIT_FLAG
+                        else:
+                            if client.running:
+                                client.status = [(client.status_header, "exiting", "yellow")]
+                            else:
+                                client.status = [(client.status_header, "exited", "red")]
 
-        self.window.refresh()
-        time.sleep(0.5)
+                for idx, item in enumerate(CLIENTS[self.top:self.top + self.max_lines]):
+                    data = item.status[0] if len(item.status) == 1 else item.status.pop()
+
+                    len_data = len(data[0]+data[1])
+                    tmp_height, tmp_width = self.window.getmaxyx()
+                    '''
+                    self.width > len(data) > tmp_width: self.width √
+                    self.width > tmp_width > len(data): self.width
+
+                    tmp_width > self.width > len(data): tmp_width
+                    tmp_width > len(data) > self.width: tmp_width √
+
+                    len(data) > tmp_width > self.width: len(data)
+                    len(data) > self.width > tmp_width: len(data) √
+
+                    这样是不行的，别问我为啥 :D
+                    maxwidth = max(self.width, tmp_width, len(data))
+                    if maxwidth != self.width or 1:
+                        self.width = maxwidth
+                        self.window.resize(self.height, self.width)
+                    '''
+
+                    # 字符串长度超出默认 win 的长度，需要 resize
+                    if self.width < len_data:
+                        self.width = len_data
+                        self.window.resize(self.height, self.width)
+                        time.sleep(1)
+
+                    # 终端宽度被调整，需要 resize
+                    if tmp_width != self.width:
+                        self.width = max(self.width, tmp_width)
+                        self.window.resize(self.height, self.width)
+                        time.sleep(1)
+
+                    # 终端高度被调整，需要 resize
+                    if tmp_height != self.height:
+                        self.max_lines = min(self.height, tmp_height)
+                        self.height = max(self.height, tmp_height)
+                        self.window.resize(self.height, self.width)
+                        self.top = 0
+                        time.sleep(1)
+
+                    # try:
+                    self.window.addstr(idx, 0, data[0], self.put_color("white"))
+                    tmp_length = len(data[0])
+                    self.window.addstr(idx, tmp_length, data[1][self.hori_len:], self.put_color(data[2]))
+                    # except Exception as e:
+                    #    with open("./log", "a") as fp:
+                    #        fp.write(data[0][self.hori_len:])
+                    #    raise
+
+                self.window.refresh()
+
+                # time.sleep(0.5)
+
+            except KeyboardInterrupt:
+                self.EXIT_FLAG = 1
 
     def scroll(self, direction, horizontal=False):
         '''
@@ -153,27 +186,21 @@ class Screen:
 
     def run(self):
         """Continue running the TUI until get interrupted"""
-        global EXIT_FLAG
 
-        try:
-            self.input_stream()
-        except KeyboardInterrupt:
-            pass
+        self.display()
 
         # 兼容 iTerm2
         # os.system("printf '\e]50;ClearScrollback\a'")
         # 兼容个屁 :D
+
         curses.endwin()
 
         # screen 的线程结束的时候
         # 通知 process_data 结束
-        EXIT_FLAG = 0
+
 
 # ---------- 全局变量 -----------
-
-
 THREADS_NUM = 3
-EXIT_FLAG = 1
 
 CLIENTS = [
     EmailBomb.EmailBomb(
@@ -184,10 +211,16 @@ CLIENTS = [
 ]  # 创建攻击 client
 # ------------------------------
 
+
 for client in CLIENTS:
     thread = threading.Thread(target=client.attack, args=("hello! my friend!", "hr: you got it!",))
     thread.setDaemon(True)
     thread.start()  # 启动攻击 client
 
 
-Screen()  # 对接 CLI 展示数据
+sc = Screen()  # 对接 CLI 展示数据
+
+t = threading.Thread(target=sc.input_stream)
+t.start()
+
+sc.run()
