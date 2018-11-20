@@ -4,6 +4,8 @@ import EmailBomb
 import threading
 import curses
 import time
+import locale
+locale.setlocale(locale.LC_ALL, '')
 
 
 class Screen:
@@ -23,21 +25,25 @@ class Screen:
     }
 
     def __init__(self):
+        self.too_small = False
+
         self.init_curses()
 
         self.top = 0
         self.bottom = len(CLIENTS)
-        self.max_lines = curses.LINES
+        self.max_lines = curses.LINES-len(LOGO)
 
         self.hori_len = 0
         self.EXIT_FLAG = 0
-
-        # self.run()
 
     def init_curses(self):
         """Setup the curses"""
         self.window = curses.initscr()
         self.height, self.width = self.window.getmaxyx()
+        if self.width < 60:
+            self.too_small = True
+            return
+
         self.window.keypad(True)
         # self.window.nodelay(True)
 
@@ -81,11 +87,6 @@ class Screen:
             elif ch == ord("q"):
                 self.EXIT_FLAG = 1
 
-        # while any([client.running for client in CLIENTS]):
-            # self.display()
-
-            # time.sleep(0.1)
-
     def display(self):
         """Display the CLIENTS on window"""
         condition = 1
@@ -103,7 +104,7 @@ class Screen:
                             else:
                                 client.status = [(client.status_header, "exited", "red")]
 
-                for idx, item in enumerate(CLIENTS[self.top:self.top + self.max_lines]):
+                for idx, item in enumerate(LOGO+CLIENTS[self.top:self.top + self.max_lines]):
                     data = item.status[0] if len(item.status) == 1 else item.status.pop()
 
                     len_data = len(data[0]+data[1])
@@ -145,14 +146,14 @@ class Screen:
                         self.top = 0
                         time.sleep(1)
 
-                    # try:
-                    self.window.addstr(idx, 0, data[0], self.put_color("white"))
-                    tmp_length = len(data[0])
-                    self.window.addstr(idx, tmp_length, data[1][self.hori_len:], self.put_color(data[2]))
-                    # except Exception as e:
-                    #    with open("./log", "a") as fp:
-                    #        fp.write(data[0][self.hori_len:])
-                    #    raise
+                    try:
+                        self.window.addstr(idx, 0, data[0], self.put_color("white"))
+                        tmp_length = len(data[0])
+                        self.window.addstr(idx, tmp_length, data[1][self.hori_len:], self.put_color(data[2]))
+                    except Exception:
+                        self.EXIT_FLAG = 1
+                        break
+                        # self.window.addstr(idx, 0, "too small", self.put_color("white"))
 
                 self.window.refresh()
 
@@ -199,8 +200,28 @@ class Screen:
         # 通知 process_data 结束
 
 
+class LOGOLine:
+    def __init__(self, data):
+        self.status = [(data, "", "red")]
+
+
 # ---------- 全局变量 -----------
-THREADS_NUM = 3
+
+
+LOGO = [
+    LOGOLine(i) for i in [
+        "",
+        "███████╗     ██╗  ██╗",
+        "██╔════╝     ██║  ██║",
+        "█████╗       ███████║",
+        "██╔══╝       ██╔══██║",
+        "███████╗     ██║  ██║",
+        "╚══════╝mail ╚═╝  ╚═╝acker",
+        "",
+    ]
+]
+
+THREADS_NUM = 30
 
 CLIENTS = [
     EmailBomb.EmailBomb(
@@ -210,17 +231,18 @@ CLIENTS = [
     ) for id in range(THREADS_NUM)
 ]  # 创建攻击 client
 # ------------------------------
-
-
-for client in CLIENTS:
-    thread = threading.Thread(target=client.attack, args=("hello! my friend!", "hr: you got it!",))
-    thread.setDaemon(True)
-    thread.start()  # 启动攻击 client
-
-
 sc = Screen()  # 对接 CLI 展示数据
 
-t = threading.Thread(target=sc.input_stream)
-t.start()
 
-sc.run()
+if sc.too_small:
+    print("too small")
+else:
+    for client in CLIENTS:
+        thread = threading.Thread(target=client.attack, args=("hello! my friend!", "hr: you got it!",))
+        thread.setDaemon(True)
+        thread.start()  # 启动攻击 client
+
+    t = threading.Thread(target=sc.input_stream)
+    t.start()
+
+    sc.run()

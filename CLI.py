@@ -35,10 +35,10 @@ class Screen:
     def __init__(self):
         self.init_curses()
 
-        self.top = 0
+        self.top = 1
         self.items = ITEMS
-        self.bottom = len(self.items)
-        self.max_lines = curses.LINES
+        self.bottom = len(self.items)+1
+        self.max_lines = curses.LINES-1
 
         self.hori_len = 0
 
@@ -88,7 +88,10 @@ class Screen:
         """Display the ITEMS on window"""
         self.window.erase()
 
+        self.window.addstr(0, 0, "555")
+
         for idx, item in enumerate(self.items[self.top:self.top + self.max_lines]):
+            idx += 1
             data = item.data
 
             tmp_height, tmp_width = self.window.getmaxyx()
@@ -121,10 +124,10 @@ class Screen:
 
             # 终端高度被调整，需要 resize
             if tmp_height != self.height:
-                self.max_lines = min(self.height, tmp_height)
-                self.height = max(self.height, tmp_height)
+                self.max_lines = min(self.height, tmp_height)+1
+                self.height = max(self.height, tmp_height)+1
                 self.window.resize(self.height, self.width)
-                self.top = 0
+                self.top = 1
 
             self.window.addstr(idx, 0, data[self.hori_len:])
 
@@ -209,7 +212,7 @@ def process_data():
 # ---------- 全局变量 -----------
 EXIT_FLAG = 1
 
-THREADS_NUM = 10
+THREADS_NUM = 30
 
 # 每一行的数据
 ITEMS = [Line(num, "starting...") for num in range(THREADS_NUM)]
@@ -227,5 +230,3 @@ thread_data.setDaemon(True)
 thread_data.start()  # 启动线程 thread_data 用于处理数据
 
 Screen()
-
-print "Bye~"
