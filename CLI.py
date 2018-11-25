@@ -110,22 +110,6 @@ class Screen:
 
                     len_data = len(data[0]+data[1])
                     tmp_height, tmp_width = self.window.getmaxyx()
-                    '''
-                    self.width > len(data) > tmp_width: self.width √
-                    self.width > tmp_width > len(data): self.width
-
-                    tmp_width > self.width > len(data): tmp_width
-                    tmp_width > len(data) > self.width: tmp_width √
-
-                    len(data) > tmp_width > self.width: len(data)
-                    len(data) > self.width > tmp_width: len(data) √
-
-                    这样是不行的，别问我为啥 :D
-                    maxwidth = max(self.width, tmp_width, len(data))
-                    if maxwidth != self.width or 1:
-                        self.width = maxwidth
-                        self.window.resize(self.height, self.width)
-                    '''
 
                     # 字符串长度超出默认 win 的长度，需要 resize
                     if self.width < len_data:
