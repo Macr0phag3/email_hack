@@ -81,7 +81,7 @@ class EmailHackerWidget(QWidget):
                 'Email Subject': '-s',
                 'Thread Num': '-tnum',
                 'Body': '-b'}
-        cmd = 'python email_hacker.py'
+        cmd = 'python3 email_hacker.py'
 
         for name, obj in self.text_objs.items():
             text = None
