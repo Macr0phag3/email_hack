@@ -1,3 +1,4 @@
+import os
 import sys
 from PyQt5.QtGui import QIntValidator
 from PyQt5.QtCore import Qt
@@ -75,8 +76,15 @@ class EmailHackerWidget(QWidget):
                 hight += 1
             
     def run(self):
+        attr = {'From Address': '-faddr', 
+                'To Address': '-taddr',
+                'Email Subject': '-s',
+                'Thread Num': '-tnum',
+                'Body': '-b'}
+        cmd = 'python email_hacker.py'
+
         for name, obj in self.text_objs.items():
-            text = ''
+            text = None
             if isinstance(obj, QTextEdit):
                 text = obj.toPlainText()
             elif isinstance(obj, QLineEdit):
@@ -87,9 +95,14 @@ class EmailHackerWidget(QWidget):
                 QMessageBox.information(self, 'Information',
                                         '"%s" has not been set, pls check your config' % name)
                 return
-        verbose = self.v_group.checkedId()
-        crazy_mode = self.c_group.checkedId()
-        print('run')
+            if name == 'Email Subject' or name == 'Body':
+                text = '"' + text + '"'
+            cmd += ' ' + attr[name] + ' ' + text
+        verbose_rank = self.v_group.checkedId()
+        cmd += ' -v ' + str(verbose_rank)
+        if self.c_group.checkedId():
+            cmd += ' -c'
+        os.system(cmd)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
