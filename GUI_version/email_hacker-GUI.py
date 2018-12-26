@@ -32,6 +32,7 @@ class FakeEmail:
         self.succ_num = 0
 
     def Connect(self):
+        time.sleep(random.random()*1.5)
         self.sk = socket.socket()
         self.sk.settimeout(self.timeout)
 
