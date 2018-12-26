@@ -145,8 +145,8 @@ def superPrint():
 
     _, fixed_length = os.popen('stty size', 'r').read().split()
     fixed_length = int(fixed_length)
+    length = 0
     for index in Indicator("attacking..."):
-
         for i, data in enumerate(Data):
             _, length = os.popen('stty size', 'r').read().split()
             length = int(length)
@@ -155,15 +155,15 @@ def superPrint():
                 fixed_length = length
 
             print("\r%s%s" % ("No.%d: " % i,
-                                    data if len(data) < length else data[:length-3]+"..."))
+                  data if len(data) < length else data[:length-3]+"..."))
 
-        print("[%d] %s" % (succ_num, index))
+        print("\r[%d] %s" % (succ_num, index))
         print("[%dA" % (len(Data)+1))
         time.sleep(0.1)
 
     for i, data in enumerate(Data):
         print("\r%s%s" % ("No.%d: " % i,
-                                data if len(data) < length else data[:length-3]+"..."))
+              data if len(data) < length else data[:length-3]+"..."))
     if crazy_mode != 1:
         print("")
     Lock.release()
@@ -277,6 +277,7 @@ class EmailHackerWidget(QWidget):
     def __init__(self):
         super(EmailHackerWidget, self).__init__()
         self.InitUI()
+        self.resize(800, 600)
         self.show()
         
         # custom output stream
@@ -413,8 +414,6 @@ class EmailHackerWidget(QWidget):
                 return
         
         InitVars(Attrs)
-        show_logo()
-        SMTP_addr = DNSQuery(to_addr)
         if SMTP_addr:
             ver = "go"
             Launcher()
@@ -440,6 +439,7 @@ def InitVars(Attrs):
     global threads_alive
     global Data
     global Lock 
+    global SMTP_addr
 
     from_addr = Attrs.get('From Address')
     to_addr = Attrs.get('To Address')
@@ -480,6 +480,7 @@ def InitVars(Attrs):
         else:
             Print(u"in a mess, of course\n", color=u"yellow", threshold=0, sign=u"[!]", flag=0)
 
+    SMTP_addr = DNSQuery(to_addr)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
