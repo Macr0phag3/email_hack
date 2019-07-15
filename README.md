@@ -1,5 +1,6 @@
 ![logo](https://raw.githubusercontent.com/Macr0phag3/email_hack/master/pics/Logo.png)
 
+## 项目介绍
 using python to create a fake-email & email-bomb!
 
 利用 Python 伪造电子邮件发件人以及制造电子邮件炸弹
@@ -10,7 +11,14 @@ You can come to [my blog](https://www.tr0y.wang/2018/09/26/email-hacker/) or [fr
 
 我的[博客](https://www.tr0y.wang/2018/09/26/email-hacker/) 以及 [freebuf](http://www.freebuf.com/sectool/184555.html) 均有详细的原理说明，有兴趣的话可以去看看。
 
-## Dependencies
+## 特性
+1. Python 实现，可以轻松订制
+2. 每封邮件都加入了随机化的字符串，逃逸一些基础的检测
+3. 利用类似长连接的方式提高了轰炸的效率
+4. 详细的原理说明
+
+## 快速开始
+### Dependencies/依赖
 `pip install dnspython`
 
 **OS**
@@ -21,8 +29,7 @@ You can come to [my blog](https://www.tr0y.wang/2018/09/26/email-hacker/) or [fr
 - [x] Py2.x
 - [x] Py3.x
 
-
-## 说明书
+### 说明书
 GIF 演示
 
 - `python email_hacker.py -faddr hr@huawei.com -taddr xxxxxx@163.com -s "完美世界 2019 校园招聘" -b "同学你好\n感谢你对完美世界校园招聘的关注，面试时间暂定为 9月20日 下午两点。如有疑问欢迎邮件交流~\n在茫茫宇宙中，在浩瀚银河里，有一个可以任你挥洒的世界，大家都抱着纯粹初心背负梦想前行，在这里，激情无限，跟志同道合的伙伴热血拼搏。在这里，秉持热爱，把梦想变成现实。在这里，精益求精，定义下一代未知的惊喜！"`
@@ -62,13 +69,13 @@ GIF 演示
                         长连接模式，谨慎使用，默认为False
 ```
 
-## Cookbook
+### Cookbook
 ctrl+c to stop
 
 using `python email_hacker.py -h` to get help
 :P
 
-## Update
+## Update/更新
 - v1.0: 基本的发送，伪造功能
 - v2.0:
   - 增加 verbose 为4个级别：0、1、2、3. 2018.10.01 10:10 AM
@@ -77,7 +84,7 @@ using `python email_hacker.py -h` to get help
   - 修复若干个 bug. ~~2018.10.02 23:10 AM~~ 2018.11.2 17:23:03
   - 优化固定行输出方案. 2018.10.04 11:10 AM
 
-## TODO
+## TODO/待办
 - [x] 优化固定行输出时，单行内容放不下导致输出混乱的问题。(超出命令行长度的字符将被省略输出)。
 - [x] readme 增加动图演示
 - [x] 修改一下 `--help` 以及参数的说明
@@ -86,7 +93,7 @@ using `python email_hacker.py -h` to get help
 - [x] 随机邮件内容
 - [x] 为 crazy_mode 增加一个级别的 verbose
 - [x] 将单线程模式也开设一个线程，主进程不再负责具体任务，以便统一代码形式。
-- [ ] 弃用 python-dns 自己解析
+- [ ] ~弃用 python-dns 自己解析~
 - [x] 重构代码，简化之。（作为练习设计模式的实验品）
   - [x] 分离 CLI 与邮件功能. 2018.11.14 16:54:34
   - [x] 先画一个 CLI. 2018.11.16 00:15:42
