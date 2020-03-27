@@ -102,3 +102,6 @@ using `python email_hacker.py -h` to get help
     - [x] EmailBomb. 2018.11.18 16:00:39
 - [x] CLI 版本 大致完成，不打算进一步完善。功能有限，仅用于练习 curses. 2018.11.25 12:22:04
 - [x] 后续可能会出一个 GUI 版本.
+
+## 其他
+[![Stargazers over time](https://starchart.cc/Macr0phag3/email_hack.svg)](https://starchart.cc/Macr0phag3/email_hack)
