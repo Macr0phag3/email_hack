@@ -32,13 +32,13 @@ You can come to [my blog](https://www.tr0y.wang/2018/09/26/email-hacker/) or [fr
 ### 说明书
 GIF 演示
 
-- `python email_hacker.py -faddr hr@huawei.com -taddr xxxxxx@163.com -s "完美世界 2019 校园招聘" -b "同学你好\n感谢你对完美世界校园招聘的关注，面试时间暂定为 9月20日 下午两点。如有疑问欢迎邮件交流~\n在茫茫宇宙中，在浩瀚银河里，有一个可以任你挥洒的世界，大家都抱着纯粹初心背负梦想前行，在这里，激情无限，跟志同道合的伙伴热血拼搏。在这里，秉持热爱，把梦想变成现实。在这里，精益求精，定义下一代未知的惊喜！"`
+- `python email_hacker.py -faddr hr@huawei.com -taddr xxxxxx@163.com -s "[打码]世界 2019 校园招聘" -b "同学你好\n感谢你对[打码]世界校园招聘的关注，面试时间暂定为 9月20日 下午两点。如有疑问欢迎邮件交流~\n在茫茫宇宙中，在浩瀚银河里，有一个可以任你挥洒的世界，大家都抱着纯粹初心背负梦想前行，在这里，激情无限，跟志同道合的伙伴热血拼搏。在这里，秉持热爱，把梦想变成现实。在这里，精益求精，定义下一代未知的惊喜！"`
 ![no_argv](https://raw.githubusercontent.com/Macr0phag3/email_hack/master/pics/no_argv.png)
 
-- `python email_hacker.py -faddr hr@huawei.com -taddr xxxxxx@163.com -v1 -tnum 2 -c -s "完美世界 2019 校园招聘" -b "同学你好\n感谢你对完美世界校园招聘的关注，面试时间暂定为 9月20日 下午两点。如有疑问欢迎邮件交流~\n在茫茫宇宙中，在浩瀚银河里，有一个可以任你挥洒的世界，大家都抱着纯粹初心背负梦想前行，在这里，激情无限，跟志同道合的伙伴热血拼搏。在这里，秉持热爱，把梦想变成现实。在这里，精益求精，定义下一代未知的惊喜！"`
+- `python email_hacker.py -faddr hr@huawei.com -taddr xxxxxx@163.com -v1 -tnum 2 -c -s "[打码]世界 2019 校园招聘" -b "同学你好\n感谢你对[打码]世界校园招聘的关注，面试时间暂定为 9月20日 下午两点。如有疑问欢迎邮件交流~\n在茫茫宇宙中，在浩瀚银河里，有一个可以任你挥洒的世界，大家都抱着纯粹初心背负梦想前行，在这里，激情无限，跟志同道合的伙伴热血拼搏。在这里，秉持热爱，把梦想变成现实。在这里，精益求精，定义下一代未知的惊喜！"`
 ![tnum2_v1](https://raw.githubusercontent.com/Macr0phag3/email_hack/master/pics/tnum2_v1.gif)
 
-- `python email_hacker.py -faddr hr@huawei.com -taddr xxxxxx@163.com -tnum 5 -c -s "完美世界 2019 校园招聘" -b "同学你好\n感谢你对完美世界校园招聘的关注，面试时间暂定为 9月20日 下午两点。如有疑问欢迎邮件交流~\n在茫茫宇宙中，在浩瀚银河里，有一个可以任你挥洒的世界，大家都抱着纯粹初心背负梦想前行，在这里，激情无限，跟志同道合的伙伴热血拼搏。在这里，秉持热爱，把梦想变成现实。在这里，精益求精，定义下一代未知的惊喜！"`
+- `python email_hacker.py -faddr hr@huawei.com -taddr xxxxxx@163.com -tnum 5 -c -s "[打码]世界 2019 校园招聘" -b "同学你好\n感谢你对[打码]世界校园招聘的关注，面试时间暂定为 9月20日 下午两点。如有疑问欢迎邮件交流~\n在茫茫宇宙中，在浩瀚银河里，有一个可以任你挥洒的世界，大家都抱着纯粹初心背负梦想前行，在这里，激情无限，跟志同道合的伙伴热血拼搏。在这里，秉持热爱，把梦想变成现实。在这里，精益求精，定义下一代未知的惊喜！"`
 ![tnum5_c](https://raw.githubusercontent.com/Macr0phag3/email_hack/master/pics/tnum5_c.gif)
 
 使用 ctrl+c 终止程序
