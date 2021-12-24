@@ -104,4 +104,6 @@ using `python email_hacker.py -h` to get help
 - [x] 后续可能会出一个 GUI 版本.
 
 ## 其他
+<img src="https://clean-1252075454.cos.ap-nanjing.myqcloud.com/20200528120800990.png" width="500">
+
 [![Stargazers over time](https://starchart.cc/Macr0phag3/email_hack.svg)](https://starchart.cc/Macr0phag3/email_hack)
