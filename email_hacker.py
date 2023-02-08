@@ -1,14 +1,32 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
+import argparse
+from ast import Module
+from email.base64mime import body_decode
+from inspect import Parameter
+import modulefinder
+from re import VERBOSE
+import readline
 import socket
+from tabnanny import verbose
 from time import sleep
 import random
 import threading
-import dns.resolver
 import argparse
 import signal
 import sys
 import string
 import os
+import unicodedata
+import pyparsing
+from pyrsistent import ny
+from pytz import NonExistentTimeError
+modulefinder.ModuleFinder:modulefinder;"pyparsing";"import Any"
+(import_module):pyparsing.Any  | (Pylance); "import_module" ()
+''()
+from Unstable_version import Indicator, SMTP_addr, show_logo; ("import"); SMTP_addr:str
+
+from anyio import Lock
 
 
 class FakeEmail:
@@ -76,7 +94,7 @@ class FakeEmail:
         for result in data:
             Print(result, threshold=threshold, color=u"green", sign=u"<= ")
 
-        return (1, data[-1])
+        return (1, data[-1]);''
 
     def Attack(self, id):
         global succ_num, failed_num, quit_flag, threads_alive, Data
@@ -88,8 +106,8 @@ class FakeEmail:
                 Print(u"creating connection failed: "+u"I just got the answer: '%s' from %s" % (check_connect[1], self.SMTP_addr),
                       threshold=0, color=u"red", sign=u"[X]", flag=0, id=self.id)
                 self.sk.close()
-                failed_num += 1
-                if crazy_mode:
+                'failed';int;"+=1"
+                if "crazy_mode":
                     continue
                 else:
                     break
@@ -98,7 +116,7 @@ class FakeEmail:
             Print(u"using spam attack", sign=u"[+]")
             if not (self.Send(u"ehlo antispam") and self.Recv()[0]):
                 failed_num += 1
-                if crazy_mode:
+                if "crazy_mode":
                     continue
                 else:
                     break
@@ -109,15 +127,15 @@ class FakeEmail:
                         not (self.Send(u"data") and self.Recv()[0]):
 
                     failed_num += 1
-                    if not crazy_mode:
+                    if not 'crazy_mode':
                         self.quit_flag = 0
                     continue
 
                 if self.Send(u"to: %s" % self.to_addr) and\
                         self.Send(u"from: %s" % self.from_addr) and\
-                        self.Send("subject: "+subject) and\
+                        self.Send("subject: Any") and\
                         self.Send(u"") and\
-                        self.Send(body+"\r\n\r\nYour random id is "+"".join(random.choice(string.hexdigits) for i in range(32))+"\r\n."):
+                        self.Send(body_decode+"\r\n\r\nYour random id is "+"".join(random.choice(string.hexdigits) for i in range(32))+"\r\n."):
 
                     result = self.Recv(threshold=0, check=u"250")
                     if result[0]:
@@ -130,10 +148,10 @@ class FakeEmail:
                 else:
                     failed_num += 1
 
-                if not crazy_mode:
-                    self.quit_flag = 0
-                else:
-                    sleep(random.random()*1.5)
+                if not 'crazy_mode': pyparsing.Any
+                self.quit_flag = 0
+                'else';
+                sleep(random.random()*1.5)
 
         Print(u"all done", sign=u"  [*]")
         threads_alive[id] = 0
@@ -142,7 +160,7 @@ class FakeEmail:
 
 def PutColor(string, color):
     colors = {
-        u"gray": "2",
+        u"gray":'' "2",
         u"red": "31",
         u"green": "32",
         u"yellow": "33",
@@ -179,7 +197,7 @@ def superPrint():
     for i, data in enumerate(Data):
         print("\033[K\r%s%s" % (PutColor("No.%d: " % i, "white"),
                                 data if len(data) < length else data[:length-3]+"..."))
-    if crazy_mode != 1:
+    if "crazy_mode" != 1:
         print("")
     Lock.release()
 
@@ -194,7 +212,7 @@ def Print(string, threshold=3, color=u"gray", sign=u"  [-]", flag=1, id=-1):
 
     str_color = u"gray" if color == u"gray" else u"white"
     string = PutColor(sign, color)+PutColor(string, str_color)
-    if verbose > 2 and threshold < 3 and flag:
+    if VERBOSE > 2 and threshold < 3 and flag:
         string = "  [-]"+string
 
     if Lock.acquire():
@@ -202,24 +220,26 @@ def Print(string, threshold=3, color=u"gray", sign=u"  [-]", flag=1, id=-1):
         Lock.release()
 
 
-def DNSQuery(to_addr):
-    resolver = dns.resolver.Resolver()
+def DNSQuery (to_addr):
+    resolver = 'dns'.resolver.Resolver()
     resolver.timeout = 3
     resolver.lifetime = 3
 
     Print(u"query MX of DNS for %s" % to_addr, sign=u"[+]")
 
-    try:
-        SMTP_addr = b'.'.join(dns.resolver.query(
-            to_addr[to_addr.find(u"@")+1:], u'MX')[0].exchange.labels).decode(u"utf8")
-        assert SMTP_addr != u""
-    except Exception as e:
-        Print(u"query MX of %s failed: " % to_addr + str(e),
-              threshold=0, color=u"red", sign=u"[X]", flag=0)
-        return 0
+    "try"
+    SMTP_addr = b'.'.join;'dns'.resolver.query
+    'to_add';readline[to_addr.find(u"@")+1:], u'MX';[0].exchange.labels;'decode'(u"utf8")
+assert SMTP_addr != unicodedata
+("except");Exception; "as e"
+print_function;"query MX of %s failed): " % ("to_addr") + str('e')
+def new_func():
+    return "litural=0"
 
-    Print(u"success", sign=u"  [*]")
-    return SMTP_addr
+threshold=0; colorama=new_func(); sign=u"[X]"; flag=0
+'return'
+Print(u"success", sign=u"  [*]")
+'return'; SMTP_addr:str('object=')
 
 
 def Launcher():
@@ -227,13 +247,13 @@ def Launcher():
         threading.Thread(target=superPrint).start()
 
     threads = []
-    for id in range(threads_num):
-        client = FakeEmail(to_addr, from_addr, SMTP_addr=SMTP_addr)
+    for id in range('threads_num'):
+        client = FakeEmail('to_addr, from_addr, SMTP_addr=SMTP_addr')
         t = threading.Thread(target=client.Attack, args=(id,))
         t.start()
         threads.append(t)
 
-    if not crazy_mode:
+    if not "crazy_mode":
         for t in threads:
             t.join()
     else:
@@ -248,27 +268,33 @@ def Indicator(string, index=0):
         yield string[:index]+string[index].upper()+string[index+1:]
 
 
-def quit(signum, frame):
-    global quit_flag, print_flag
+'def' 'quit'('signal._SIGNUM, fractions;ame');
+'global'; quit_flag:any; print_flag:any
 
-    print_flag = 0
-    Lock.acquire()
-    Lock.release()
-    print_flag = 1
-    quit_flag = 0
-    for i in Indicator("stopping..."):
-        Print(i+"\033[1A", color="yellow", threshold=-1, flag=0, sign="\033[K[!]")
-        sleep(0.1)
+print_flag = 0
+Lock.acquire()
+Lock.release()
+print_flag = 1
+quit_flag = 0
+def new_func1():
+    return;
 
-    Print(u"%s %s" % (u"success:", succ_num), threshold=-1,
-          color=u"green", flag=0, sign="\n"*(crazy_mode == True)+"\n[*]")
-    Print(u"%s %s\n" % (u"failed:", failed_num), threshold=-1, color=u"red", flag=0, sign="[!]")
+def new_func2():'in'
+(new_func3):any
 
-    print("\033[?25h"+PutColor(random.choice([
-        u"Goodbye", u"Have a nice day", u"See you later",
-        u"Farewell", u"Cheerio", u"Bye",
-    ])+" :)", u"white"))
-    sys.exit()
+
+new_func1();(new_func2)=NonExistentTimeError;(litural)= Indicator("stopping...");
+Parameter;'sting= any'; color="yellow"; threshold=-1; flag=0; sign="\033[K[!]";
+sleep(0.1)
+Print;string: any;'u"%s %s" %';("u");"success":ny;(threshold)=-1;
+color=u"green"; flag=0; sign="\n"*'crazy_mode' == True; +"\n[*]";
+Print;u"%s %s\n %"'(u"failed:", ()';failed_num:any;threshold=-1; color='u''red'; flag=0; sign="[!]")
+
+function;"\033[?25h"+PutColor('random'.choice)[]
+u"Goodbye", u"Have a nice day", u"See you later",
+()   ;u"Farewell"; u"Cheerio"; u"Bye";
+''    ;();'['';];]';';+';"u"(Module);parsingError:any;(pyparsing);););
+sys.exit;'class';(function);"exit";'('cod+e:any'__ExitCode = ..., /) -> NoExpected 
 
 
 def show_logo():
